@@ -1,0 +1,135 @@
+//
+//  ETechFlow Banner Slider — storefront styles (Luma)
+//  Stacked slides so there is no layout shift (CLS) and the markup stays light.
+//  _____________________________________________
+
+& when (@media-common = true) {
+
+    .etf-bannerslider {
+        position: relative;
+        margin: 0 0 20px;
+
+        &__title {
+            margin: 0 0 12px;
+        }
+
+        &__viewport {
+            position: relative;
+            overflow: hidden;
+            // Reserve space up-front to avoid Cumulative Layout Shift.
+            aspect-ratio: 16 / 5;
+            background: #f4f4f4;
+        }
+
+        &__track {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        &__slide {
+            position: absolute;
+            inset: 0;
+            margin: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .5s ease;
+
+            &.is-active {
+                opacity: 1;
+                visibility: visible;
+                z-index: 1;
+            }
+        }
+
+        // Slide effect: shift in from the right instead of a pure fade.
+        &.effect-slide &__slide {
+            transform: translateX(30px);
+            transition: opacity .5s ease, transform .5s ease;
+
+            &.is-active {
+                transform: translateX(0);
+            }
+        }
+
+        &__link,
+        picture {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        &__image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        &__html {
+            width: 100%;
+            height: 100%;
+        }
+
+        &__arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            border: 0;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            font-size: 26px;
+            line-height: 1;
+            color: #fff;
+            background: rgba(0, 0, 0, .35);
+            border-radius: 50%;
+            transition: background .2s ease;
+
+            &:hover {
+                background: rgba(0, 0, 0, .6);
+            }
+
+            &--prev { left: 12px; }
+            &--next { right: 12px; }
+        }
+
+        &__bullets {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        &__bullet {
+            width: 10px;
+            height: 10px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            background: #ccc;
+            transition: background .2s ease;
+
+            &.is-active {
+                background: #333;
+            }
+        }
+    }
+}
+
+//  Mobile
+//  _____________________________________________
+
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
+    .etf-bannerslider__viewport {
+        aspect-ratio: 4 / 3;
+    }
+    .etf-bannerslider__arrow {
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+    }
+}

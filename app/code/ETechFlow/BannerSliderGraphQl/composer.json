@@ -1,0 +1,20 @@
+{
+    "name": "etechflow/module-banner-slider-graphql",
+    "description": "GraphQL API for ETechFlow Banner Slider — query targeted sliders and record tracking events from headless / PWA / Hyvä Checkout storefronts.",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "require": {
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+        "etechflow/module-banner-slider": "*",
+        "magento/module-graph-ql": "*"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "ETechFlow\\BannerSliderGraphQl\\": ""
+        }
+    },
+    "version": "1.0.0"
+}

@@ -1,0 +1,382 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">etechflow_bannerslider_slider_form.etechflow_bannerslider_slider_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Slider Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="ETechFlow\BannerSlider\Block\Adminhtml\Slider\Edit\BackButton"/>
+            <button name="delete" class="ETechFlow\BannerSlider\Block\Adminhtml\Slider\Edit\DeleteButton"/>
+            <button name="save" class="ETechFlow\BannerSlider\Block\Adminhtml\Slider\Edit\SaveButton"/>
+            <button name="save_and_continue" class="ETechFlow\BannerSlider\Block\Adminhtml\Slider\Edit\SaveAndContinueButton"/>
+        </buttons>
+        <namespace>etechflow_bannerslider_slider_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>etechflow_bannerslider_slider_form.etechflow_bannerslider_slider_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="etechflow_bannerslider_slider_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="*/*/save"/>
+        </settings>
+        <dataProvider name="etechflow_bannerslider_slider_form_data_source"
+                      class="ETechFlow\BannerSlider\Model\Slider\DataProvider">
+            <settings>
+                <requestFieldName>slider_id</requestFieldName>
+                <primaryFieldName>slider_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <!-- ===================== General ===================== -->
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="slider_id" formElement="hidden">
+            <settings>
+                <dataType>number</dataType>
+            </settings>
+        </field>
+        <field name="title" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Title</label>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="status" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Status</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\Status"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="priority" formElement="input">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Priority</label>
+                <notice translate="true">Higher priority wins when multiple sliders match the same placement.</notice>
+                <validation>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Behaviour ===================== -->
+    <fieldset name="behaviour">
+        <settings>
+            <label translate="true">Slider Behaviour</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="autoplay" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Autoplay</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="autoplay_speed" formElement="input">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Autoplay Interval (ms)</label>
+                <validation>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="animation_effect" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Transition Effect</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\AnimationEffect"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="animation_speed" formElement="input">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Transition Duration (ms)</label>
+                <validation>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="show_arrows" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Show Arrows</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="show_bullets" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Show Bullets</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="is_loop" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Loop</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="pause_on_hover" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Pause on Hover</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="lazy_load" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Lazy Load Images</label>
+                <notice translate="true">Defers off-screen slides to protect Core Web Vitals.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Assigned Banners ===================== -->
+    <fieldset name="banners_fieldset">
+        <settings>
+            <label translate="true">Banners</label>
+        </settings>
+        <dynamicRows name="banners">
+            <settings>
+                <addButtonLabel translate="true">Add Banner</addButtonLabel>
+                <componentType>dynamicRows</componentType>
+                <dndConfig>
+                    <param name="enabled" xsi:type="boolean">true</param>
+                </dndConfig>
+                <label translate="true"/>
+                <recordTemplate>record</recordTemplate>
+                <dataScope>banners</dataScope>
+            </settings>
+            <container name="record">
+                <argument name="data" xsi:type="array">
+                    <item name="config" xsi:type="array">
+                        <item name="componentType" xsi:type="string">container</item>
+                        <item name="isTemplate" xsi:type="boolean">true</item>
+                        <item name="is_collection" xsi:type="boolean">true</item>
+                        <item name="component" xsi:type="string">Magento_Ui/js/dynamic-rows/record</item>
+                        <item name="dataScope" xsi:type="string"></item>
+                    </item>
+                </argument>
+                <field name="position" formElement="input">
+                    <settings>
+                        <dataType>number</dataType>
+                        <visible>false</visible>
+                        <additionalClasses>
+                            <class name="_hidden">true</class>
+                        </additionalClasses>
+                    </settings>
+                </field>
+                <field name="banner_id" formElement="select" component="Magento_Ui/js/form/element/ui-select">
+                    <settings>
+                        <dataType>number</dataType>
+                        <label translate="true">Banner</label>
+                        <validation>
+                            <rule name="required-entry" xsi:type="boolean">true</rule>
+                        </validation>
+                    </settings>
+                    <formElements>
+                        <select>
+                            <settings>
+                                <options class="ETechFlow\BannerSlider\Model\Source\Banners"/>
+                            </settings>
+                        </select>
+                    </formElements>
+                </field>
+                <field name="variant" formElement="input">
+                    <settings>
+                        <dataType>text</dataType>
+                        <label translate="true">A/B Variant</label>
+                        <default>default</default>
+                        <notice translate="true">Group banners under variant labels (default, A, B…) for A/B tests.</notice>
+                    </settings>
+                </field>
+                <field name="weight" formElement="input">
+                    <settings>
+                        <dataType>number</dataType>
+                        <label translate="true">Weight</label>
+                        <default>1</default>
+                        <validation>
+                            <rule name="validate-digits" xsi:type="boolean">true</rule>
+                        </validation>
+                    </settings>
+                </field>
+                <actionDelete>
+                    <settings>
+                        <dataType>text</dataType>
+                        <label translate="true">Actions</label>
+                        <componentType>actionDelete</componentType>
+                    </settings>
+                </actionDelete>
+            </container>
+        </dynamicRows>
+    </fieldset>
+
+    <!-- ===================== Visibility (baseline targeting) ===================== -->
+    <fieldset name="visibility">
+        <settings>
+            <label translate="true">Visibility</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="store_ids" formElement="multiselect">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Store Views</label>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\StoreView"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="customer_group_ids" formElement="multiselect">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Customer Groups</label>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Magento\Customer\Model\Config\Source\Group\Multiselect"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ===================== A/B Testing (Feature 3) ===================== -->
+    <fieldset name="ab_testing">
+        <settings>
+            <label translate="true">A/B Testing</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+        </settings>
+        <field name="is_ab_test" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Enable A/B Test</label>
+                <notice translate="true">Split traffic across banner variants and auto-pick a winner.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="ab_goal" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Winning Metric</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\AbGoal"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <etechflow_bannerslider>
+            <general>
+                <enabled>1</enabled>
+            </general>
+            <performance>
+                <lazy_load>1</lazy_load>
+                <webp>1</webp>
+                <async_tracking>1</async_tracking>
+            </performance>
+            <targeting>
+                <geo_enabled>0</geo_enabled>
+            </targeting>
+            <analytics>
+                <attribution_window>7</attribution_window>
+            </analytics>
+        </etechflow_bannerslider>
+    </default>
+</config>

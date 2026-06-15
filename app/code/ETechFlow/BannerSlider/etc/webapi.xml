@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <!-- Sliders -->
+    <route url="/V1/etechflow-bannerslider/sliders/:sliderId" method="GET">
+        <service class="ETechFlow\BannerSlider\Api\SliderRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="ETechFlow_BannerSlider::slider"/>
+        </resources>
+    </route>
+    <route url="/V1/etechflow-bannerslider/sliders" method="POST">
+        <service class="ETechFlow\BannerSlider\Api\SliderRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="ETechFlow_BannerSlider::slider"/>
+        </resources>
+    </route>
+    <route url="/V1/etechflow-bannerslider/sliders/:sliderId" method="DELETE">
+        <service class="ETechFlow\BannerSlider\Api\SliderRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="ETechFlow_BannerSlider::slider"/>
+        </resources>
+    </route>
+
+    <!-- Banners -->
+    <route url="/V1/etechflow-bannerslider/banners/:bannerId" method="GET">
+        <service class="ETechFlow\BannerSlider\Api\BannerRepositoryInterface" method="getById"/>
+        <resources>
+            <resource ref="ETechFlow_BannerSlider::banner"/>
+        </resources>
+    </route>
+    <route url="/V1/etechflow-bannerslider/banners" method="POST">
+        <service class="ETechFlow\BannerSlider\Api\BannerRepositoryInterface" method="save"/>
+        <resources>
+            <resource ref="ETechFlow_BannerSlider::banner"/>
+        </resources>
+    </route>
+    <route url="/V1/etechflow-bannerslider/banners/:bannerId" method="DELETE">
+        <service class="ETechFlow\BannerSlider\Api\BannerRepositoryInterface" method="deleteById"/>
+        <resources>
+            <resource ref="ETechFlow_BannerSlider::banner"/>
+        </resources>
+    </route>
+
+</routes>

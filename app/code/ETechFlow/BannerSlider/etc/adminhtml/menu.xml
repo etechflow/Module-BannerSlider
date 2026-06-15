@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="ETechFlow_BannerSlider::bannerslider"
+             title="Banner Slider"
+             translate="title"
+             module="ETechFlow_BannerSlider"
+             sortOrder="50"
+             resource="ETechFlow_BannerSlider::bannerslider"
+             parent="Magento_Backend::content"/>
+        <add id="ETechFlow_BannerSlider::slider"
+             title="Sliders"
+             translate="title"
+             module="ETechFlow_BannerSlider"
+             sortOrder="10"
+             action="etechflow_bannerslider/slider/index"
+             resource="ETechFlow_BannerSlider::slider"
+             parent="ETechFlow_BannerSlider::bannerslider"/>
+        <add id="ETechFlow_BannerSlider::banner"
+             title="Banners"
+             translate="title"
+             module="ETechFlow_BannerSlider"
+             sortOrder="20"
+             action="etechflow_bannerslider/banner/index"
+             resource="ETechFlow_BannerSlider::banner"
+             parent="ETechFlow_BannerSlider::bannerslider"/>
+        <add id="ETechFlow_BannerSlider::report"
+             title="Statistics"
+             translate="title"
+             module="ETechFlow_BannerSlider"
+             sortOrder="30"
+             action="etechflow_bannerslider/report/dashboard"
+             resource="ETechFlow_BannerSlider::report"
+             parent="ETechFlow_BannerSlider::bannerslider"/>
+    </menu>
+</config>

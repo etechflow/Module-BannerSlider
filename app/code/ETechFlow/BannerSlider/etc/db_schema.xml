@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- ============================================================ -->
+    <!-- Slider: holds slider-level behaviour + targeting + A/B flag  -->
+    <!-- ============================================================ -->
+    <table name="etechflow_bannerslider_slider" resource="default" engine="innodb"
+           comment="ETechFlow Banner Slider - Sliders">
+        <column xsi:type="int" name="slider_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Slider ID"/>
+        <column xsi:type="varchar" name="title" nullable="false" length="255" comment="Internal Title"/>
+        <column xsi:type="smallint" name="status" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Status (1=enabled,0=disabled)"/>
+        <column xsi:type="text" name="store_ids" nullable="true" comment="Store View IDs (comma separated)"/>
+        <column xsi:type="text" name="customer_group_ids" nullable="true" comment="Customer Group IDs (comma separated)"/>
+
+        <!-- Slider behaviour -->
+        <column xsi:type="smallint" name="autoplay" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Autoplay enabled"/>
+        <column xsi:type="int" name="autoplay_speed" padding="10" unsigned="true" nullable="false" default="3500"
+                comment="Autoplay interval (ms)"/>
+        <column xsi:type="int" name="animation_speed" padding="10" unsigned="true" nullable="false" default="500"
+                comment="Transition duration (ms)"/>
+        <column xsi:type="varchar" name="animation_effect" nullable="false" length="32" default="slide"
+                comment="Transition effect (slide|fade|cube)"/>
+        <column xsi:type="smallint" name="show_arrows" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Show navigation arrows"/>
+        <column xsi:type="smallint" name="show_bullets" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Show navigation bullets"/>
+        <column xsi:type="smallint" name="is_loop" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Loop slides"/>
+        <column xsi:type="smallint" name="pause_on_hover" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Pause autoplay on hover"/>
+        <column xsi:type="smallint" name="lazy_load" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Lazy load non-first slides"/>
+
+        <!-- FEATURE 1: Smart rule-based targeting (serialized condition tree) -->
+        <column xsi:type="text" name="conditions_serialized" nullable="true"
+                comment="Serialized targeting rule conditions"/>
+
+        <!-- FEATURE 3: A/B testing -->
+        <column xsi:type="smallint" name="is_ab_test" padding="5" unsigned="true" nullable="false" default="0"
+                comment="A/B test enabled for this slider"/>
+        <column xsi:type="varchar" name="ab_goal" nullable="false" length="32" default="ctr"
+                comment="A/B winning metric (ctr|add_to_cart|revenue)"/>
+
+        <column xsi:type="int" name="priority" padding="10" unsigned="true" nullable="false" default="0"
+                comment="Priority when multiple sliders match a slot"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="slider_id"/>
+        </constraint>
+        <index referenceId="ETECHFLOW_BANNERSLIDER_SLIDER_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- Banner: supports image/video/html/product/countdown types    -->
+    <!-- ============================================================ -->
+    <table name="etechflow_bannerslider_banner" resource="default" engine="innodb"
+           comment="ETechFlow Banner Slider - Banners">
+        <column xsi:type="int" name="banner_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Banner ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Banner Name"/>
+        <column xsi:type="smallint" name="status" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Status (1=enabled,0=disabled)"/>
+
+        <!-- FEATURE 2: Banner type -->
+        <column xsi:type="varchar" name="type" nullable="false" length="32" default="image"
+                comment="Banner type (image|video|html|product|countdown)"/>
+
+        <!-- image type -->
+        <column xsi:type="varchar" name="image" nullable="true" length="255" comment="Desktop image path"/>
+        <column xsi:type="varchar" name="image_mobile" nullable="true" length="255" comment="Mobile image path"/>
+        <column xsi:type="varchar" name="alt_text" nullable="true" length="255" comment="Alt text"/>
+        <column xsi:type="varchar" name="url" nullable="true" length="500" comment="Target URL"/>
+        <column xsi:type="smallint" name="open_new_tab" padding="5" unsigned="true" nullable="false" default="0"
+                comment="Open link in new tab"/>
+
+        <!-- video type -->
+        <column xsi:type="varchar" name="video_type" nullable="true" length="16" comment="Video provider (mp4|youtube|vimeo)"/>
+        <column xsi:type="varchar" name="video_url" nullable="true" length="500" comment="Video URL / id"/>
+        <column xsi:type="smallint" name="video_autoplay" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Autoplay video"/>
+        <column xsi:type="smallint" name="video_muted" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Mute video"/>
+
+        <!-- html type -->
+        <column xsi:type="text" name="content" nullable="true" comment="HTML/rich content"/>
+
+        <!-- product type -->
+        <column xsi:type="int" name="product_id" padding="10" unsigned="true" nullable="true" comment="Linked product ID"/>
+
+        <!-- countdown type -->
+        <column xsi:type="timestamp" name="countdown_to" on_update="false" nullable="true"
+                comment="Countdown target datetime"/>
+        <column xsi:type="smallint" name="countdown_hide_expired" padding="5" unsigned="true" nullable="false" default="1"
+                comment="Hide banner after countdown ends"/>
+
+        <!-- Scheduling + targeting (same-as-Amasty baseline) -->
+        <column xsi:type="date" name="from_date" nullable="true" comment="Active from"/>
+        <column xsi:type="date" name="to_date" nullable="true" comment="Active to"/>
+        <column xsi:type="text" name="store_ids" nullable="true" comment="Store View IDs (comma separated)"/>
+        <column xsi:type="text" name="customer_group_ids" nullable="true" comment="Customer Group IDs (comma separated)"/>
+
+        <!-- FEATURE 1: per-banner smart targeting -->
+        <column xsi:type="text" name="conditions_serialized" nullable="true"
+                comment="Serialized per-banner targeting rule conditions"/>
+
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="banner_id"/>
+        </constraint>
+        <index referenceId="ETECHFLOW_BANNERSLIDER_BANNER_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="ETECHFLOW_BANNERSLIDER_BANNER_TYPE" indexType="btree">
+            <column name="type"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- Banner <-> Slider link (M:N) + A/B variant + position        -->
+    <!-- ============================================================ -->
+    <table name="etechflow_bannerslider_banner_slider" resource="default" engine="innodb"
+           comment="ETechFlow Banner Slider - Banner/Slider link">
+        <column xsi:type="int" name="link_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Link ID"/>
+        <column xsi:type="int" name="slider_id" padding="10" unsigned="true" nullable="false" comment="Slider ID"/>
+        <column xsi:type="int" name="banner_id" padding="10" unsigned="true" nullable="false" comment="Banner ID"/>
+        <column xsi:type="int" name="position" padding="10" unsigned="true" nullable="false" default="0"
+                comment="Sort order within slider"/>
+        <!-- FEATURE 3: A/B variant grouping + traffic weight -->
+        <column xsi:type="varchar" name="variant" nullable="false" length="32" default="default"
+                comment="A/B variant label (default|A|B|...)"/>
+        <column xsi:type="int" name="weight" padding="10" unsigned="true" nullable="false" default="1"
+                comment="Traffic weight for A/B allocation"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="link_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="ETECHFLOW_BS_LINK_SLIDER_ID_SLIDER_SLIDER_ID"
+                    table="etechflow_bannerslider_banner_slider" column="slider_id"
+                    referenceTable="etechflow_bannerslider_slider" referenceColumn="slider_id" onDelete="CASCADE"/>
+        <constraint xsi:type="foreign" referenceId="ETECHFLOW_BS_LINK_BANNER_ID_BANNER_BANNER_ID"
+                    table="etechflow_bannerslider_banner_slider" column="banner_id"
+                    referenceTable="etechflow_bannerslider_banner" referenceColumn="banner_id" onDelete="CASCADE"/>
+        <constraint xsi:type="unique" referenceId="ETECHFLOW_BS_LINK_SLIDER_BANNER_VARIANT">
+            <column name="slider_id"/>
+            <column name="banner_id"/>
+            <column name="variant"/>
+        </constraint>
+        <index referenceId="ETECHFLOW_BS_LINK_BANNER_ID" indexType="btree">
+            <column name="banner_id"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- FEATURE 4: Aggregated stats (impression/click/cart/order)    -->
+    <!-- ============================================================ -->
+    <table name="etechflow_bannerslider_stat" resource="default" engine="innodb"
+           comment="ETechFlow Banner Slider - Aggregated statistics">
+        <column xsi:type="int" name="stat_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Stat ID"/>
+        <column xsi:type="int" name="banner_id" padding="10" unsigned="true" nullable="false" comment="Banner ID"/>
+        <column xsi:type="int" name="slider_id" padding="10" unsigned="true" nullable="false" comment="Slider ID"/>
+        <column xsi:type="smallint" name="store_id" padding="5" unsigned="true" nullable="false" default="0"
+                comment="Store View ID"/>
+        <column xsi:type="varchar" name="variant" nullable="false" length="32" default="default"
+                comment="A/B variant label"/>
+        <column xsi:type="varchar" name="event_type" nullable="false" length="16"
+                comment="Event (impression|click|add_to_cart|order)"/>
+        <column xsi:type="date" name="stat_date" nullable="false" comment="Aggregation date"/>
+        <column xsi:type="int" name="cnt" padding="10" unsigned="true" nullable="false" default="0"
+                comment="Event count"/>
+        <column xsi:type="decimal" name="revenue" scale="4" precision="20" nullable="false" default="0"
+                comment="Attributed revenue (order events)"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="stat_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="ETECHFLOW_BS_STAT_UNIQUE_ROW">
+            <column name="banner_id"/>
+            <column name="slider_id"/>
+            <column name="store_id"/>
+            <column name="variant"/>
+            <column name="event_type"/>
+            <column name="stat_date"/>
+        </constraint>
+        <index referenceId="ETECHFLOW_BS_STAT_BANNER_DATE" indexType="btree">
+            <column name="banner_id"/>
+            <column name="stat_date"/>
+        </index>
+    </table>
+
+</schema>

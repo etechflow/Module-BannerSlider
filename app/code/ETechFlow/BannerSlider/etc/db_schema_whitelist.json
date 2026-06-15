@@ -1,0 +1,106 @@
+{
+    "etechflow_bannerslider_slider": {
+        "column": {
+            "slider_id": true,
+            "title": true,
+            "status": true,
+            "store_ids": true,
+            "customer_group_ids": true,
+            "autoplay": true,
+            "autoplay_speed": true,
+            "animation_speed": true,
+            "animation_effect": true,
+            "show_arrows": true,
+            "show_bullets": true,
+            "is_loop": true,
+            "pause_on_hover": true,
+            "lazy_load": true,
+            "conditions_serialized": true,
+            "is_ab_test": true,
+            "ab_goal": true,
+            "priority": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "ETECHFLOW_BANNERSLIDER_SLIDER_STATUS": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "etechflow_bannerslider_banner": {
+        "column": {
+            "banner_id": true,
+            "name": true,
+            "status": true,
+            "type": true,
+            "image": true,
+            "image_mobile": true,
+            "alt_text": true,
+            "url": true,
+            "open_new_tab": true,
+            "video_type": true,
+            "video_url": true,
+            "video_autoplay": true,
+            "video_muted": true,
+            "content": true,
+            "product_id": true,
+            "countdown_to": true,
+            "countdown_hide_expired": true,
+            "from_date": true,
+            "to_date": true,
+            "store_ids": true,
+            "customer_group_ids": true,
+            "conditions_serialized": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "ETECHFLOW_BANNERSLIDER_BANNER_STATUS": true,
+            "ETECHFLOW_BANNERSLIDER_BANNER_TYPE": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "etechflow_bannerslider_banner_slider": {
+        "column": {
+            "link_id": true,
+            "slider_id": true,
+            "banner_id": true,
+            "position": true,
+            "variant": true,
+            "weight": true
+        },
+        "index": {
+            "ETECHFLOW_BS_LINK_BANNER_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "ETECHFLOW_BS_LINK_SLIDER_ID_SLIDER_SLIDER_ID": true,
+            "ETECHFLOW_BS_LINK_BANNER_ID_BANNER_BANNER_ID": true,
+            "ETECHFLOW_BS_LINK_SLIDER_BANNER_VARIANT": true
+        }
+    },
+    "etechflow_bannerslider_stat": {
+        "column": {
+            "stat_id": true,
+            "banner_id": true,
+            "slider_id": true,
+            "store_id": true,
+            "variant": true,
+            "event_type": true,
+            "stat_date": true,
+            "cnt": true,
+            "revenue": true
+        },
+        "index": {
+            "ETECHFLOW_BS_STAT_BANNER_DATE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "ETECHFLOW_BS_STAT_UNIQUE_ROW": true
+        }
+    }
+}

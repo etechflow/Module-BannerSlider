@@ -1,0 +1,100 @@
+<?php
+/**
+ * @var \ETechFlow\BannerSlider\Block\Slider $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+if (!$block->isModuleEnabled() || !$block->hasBanners()) {
+    return;
+}
+
+$slider = $block->getSlider();
+$banners = $block->getBanners();
+$htmlId = $block->getSliderHtmlId();
+$showTitle = (bool)$block->getData('show_title');
+?>
+<div id="<?= $escaper->escapeHtmlAttr($htmlId) ?>"
+     class="etf-bannerslider effect-<?= $escaper->escapeHtmlAttr($slider->getAnimationEffect()) ?>"
+     data-slider-id="<?= (int)$slider->getId() ?>">
+
+    <?php if ($showTitle && $slider->getTitle()): ?>
+        <h2 class="etf-bannerslider__title"><?= $escaper->escapeHtml($slider->getTitle()) ?></h2>
+    <?php endif; ?>
+
+    <div class="etf-bannerslider__viewport">
+        <ul class="etf-bannerslider__track">
+            <?php foreach ($banners as $index => $row): ?>
+                <?php
+                /** @var \ETechFlow\BannerSlider\Model\Banner $banner */
+                $banner = $row['banner'];
+                $isFirst = $index === 0;
+                $desktop = $block->getMediaUrl($banner->getImage());
+                $mobile = $banner->getImageMobile() ? $block->getMediaUrl($banner->getImageMobile()) : $desktop;
+                $href = $banner->getUrl();
+                $target = $banner->getOpenNewTab() ? '_blank' : '_self';
+                $alt = $banner->getAltText() ?: $banner->getName();
+                ?>
+                <li class="etf-bannerslider__slide<?= $isFirst ? ' is-active' : '' ?>"
+                    data-banner-id="<?= (int)$banner->getId() ?>"
+                    data-variant="<?= $escaper->escapeHtmlAttr($row['variant']) ?>"
+                    data-index="<?= (int)$index ?>">
+                    <?php if ($href): ?>
+                        <a href="<?= $escaper->escapeUrl($href) ?>"
+                           target="<?= $escaper->escapeHtmlAttr($target) ?>"
+                           class="etf-bannerslider__link"
+                           data-etf-track="click">
+                    <?php endif; ?>
+
+                    <?php // Phase 4 renders image banners; other types are completed in Phase 5. ?>
+                    <?php if ($banner->getType() === \ETechFlow\BannerSlider\Api\Data\BannerInterface::TYPE_HTML): ?>
+                        <div class="etf-bannerslider__html"><?= /* @noEscape */ $banner->getContent() ?></div>
+                    <?php elseif ($desktop): ?>
+                        <picture>
+                            <?php if ($mobile !== $desktop): ?>
+                                <source media="(max-width: 768px)" srcset="<?= $escaper->escapeUrl($mobile) ?>"/>
+                            <?php endif; ?>
+                            <img
+                                <?php if ($isFirst): ?>
+                                    src="<?= $escaper->escapeUrl($desktop) ?>"
+                                    loading="eager" fetchpriority="high"
+                                <?php else: ?>
+                                    data-src="<?= $escaper->escapeUrl($desktop) ?>"
+                                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+                                    loading="lazy"
+                                <?php endif; ?>
+                                class="etf-bannerslider__image"
+                                alt="<?= $escaper->escapeHtmlAttr($alt) ?>"/>
+                        </picture>
+                    <?php endif; ?>
+
+                    <?php if ($href): ?></a><?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <?php if ($slider->getShowArrows() && count($banners) > 1): ?>
+            <button type="button" class="etf-bannerslider__arrow etf-bannerslider__arrow--prev"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Previous')) ?>">&#8249;</button>
+            <button type="button" class="etf-bannerslider__arrow etf-bannerslider__arrow--next"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Next')) ?>">&#8250;</button>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($slider->getShowBullets() && count($banners) > 1): ?>
+        <div class="etf-bannerslider__bullets" role="tablist">
+            <?php foreach ($banners as $index => $row): ?>
+                <button type="button"
+                        class="etf-bannerslider__bullet<?= $index === 0 ? ' is-active' : '' ?>"
+                        data-index="<?= (int)$index ?>"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Go to slide %1', $index + 1)) ?>"></button>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>
+
+<script type="text/x-magento-init">
+{
+    "#<?= $escaper->escapeJs($htmlId) ?>": {
+        "etfBannerSlider": <?= /* @noEscape */ $block->getJsConfig() ?>
+    }
+}
+</script>

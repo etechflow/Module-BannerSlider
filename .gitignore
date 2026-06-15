@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Composer (module ships source only; consumers run composer)
+/vendor/
+composer.lock
+
+# Build / logs
+*.log

@@ -1,0 +1,22 @@
+{
+    "name": "etechflow/module-banner-slider-hyva",
+    "description": "Hyvä Themes storefront compatibility for ETechFlow Banner Slider (Tailwind + Alpine.js, no jQuery/RequireJS). Compatible with Hyvä Checkout.",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "require": {
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+        "etechflow/module-banner-slider": "*"
+    },
+    "suggest": {
+        "hyva-themes/magento2-theme-module": "Required to render on a Hyvä storefront"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "ETechFlow\\BannerSliderHyva\\": ""
+        }
+    },
+    "version": "1.0.0"
+}

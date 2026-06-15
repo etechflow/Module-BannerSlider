@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="etechflow_bannerslider_slider"
+            class="ETechFlow\BannerSlider\Block\Widget\Slider"
+            is_email_compatible="false"
+            placeholder_image="ETechFlow_BannerSlider::images/widget_slider.png">
+        <label translate="true">ETechFlow Banner Slider</label>
+        <description translate="true">Display a smart, targeted, rich-media banner slider on any page.</description>
+        <parameters>
+            <parameter name="slider_id" xsi:type="select" visible="true" required="true" sort_order="10"
+                       source_model="ETechFlow\BannerSlider\Model\Source\Sliders">
+                <label translate="true">Slider</label>
+            </parameter>
+            <parameter name="show_title" xsi:type="select" visible="true" sort_order="20"
+                       source_model="Magento\Config\Model\Config\Source\Yesno">
+                <label translate="true">Show Slider Title</label>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>

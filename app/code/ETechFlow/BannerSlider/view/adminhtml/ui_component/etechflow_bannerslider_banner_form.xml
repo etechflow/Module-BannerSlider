@@ -1,0 +1,411 @@
+<?xml version="1.0"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form_data_source</item>
+        </item>
+        <item name="label" xsi:type="string" translate="true">Banner Information</item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="ETechFlow\BannerSlider\Block\Adminhtml\Banner\Edit\BackButton"/>
+            <button name="delete" class="ETechFlow\BannerSlider\Block\Adminhtml\Banner\Edit\DeleteButton"/>
+            <button name="save" class="ETechFlow\BannerSlider\Block\Adminhtml\Banner\Edit\SaveButton"/>
+            <button name="save_and_continue" class="ETechFlow\BannerSlider\Block\Adminhtml\Banner\Edit\SaveAndContinueButton"/>
+        </buttons>
+        <namespace>etechflow_bannerslider_banner_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="etechflow_bannerslider_banner_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="*/*/save"/>
+        </settings>
+        <dataProvider name="etechflow_bannerslider_banner_form_data_source"
+                      class="ETechFlow\BannerSlider\Model\Banner\DataProvider">
+            <settings>
+                <requestFieldName>banner_id</requestFieldName>
+                <primaryFieldName>banner_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <!-- ===================== General ===================== -->
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="banner_id" formElement="hidden">
+            <settings>
+                <dataType>number</dataType>
+            </settings>
+        </field>
+        <field name="name" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Banner Name</label>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="status" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Status</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\Status"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="type" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Banner Type</label>
+                <switcherConfig>
+                    <enabled>true</enabled>
+                    <rules>
+                        <rule name="image">
+                            <value>image</value>
+                            <actions>
+                                <action name="show_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>show</callback></action>
+                                <action name="hide_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>hide</callback></action>
+                                <action name="hide_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>hide</callback></action>
+                                <action name="hide_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>hide</callback></action>
+                                <action name="hide_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>hide</callback></action>
+                            </actions>
+                        </rule>
+                        <rule name="video">
+                            <value>video</value>
+                            <actions>
+                                <action name="hide_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>hide</callback></action>
+                                <action name="show_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>show</callback></action>
+                                <action name="hide_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>hide</callback></action>
+                                <action name="hide_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>hide</callback></action>
+                                <action name="hide_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>hide</callback></action>
+                            </actions>
+                        </rule>
+                        <rule name="html">
+                            <value>html</value>
+                            <actions>
+                                <action name="hide_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>hide</callback></action>
+                                <action name="hide_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>hide</callback></action>
+                                <action name="show_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>show</callback></action>
+                                <action name="hide_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>hide</callback></action>
+                                <action name="hide_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>hide</callback></action>
+                            </actions>
+                        </rule>
+                        <rule name="product">
+                            <value>product</value>
+                            <actions>
+                                <action name="hide_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>hide</callback></action>
+                                <action name="hide_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>hide</callback></action>
+                                <action name="hide_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>hide</callback></action>
+                                <action name="show_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>show</callback></action>
+                                <action name="hide_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>hide</callback></action>
+                            </actions>
+                        </rule>
+                        <rule name="countdown">
+                            <value>countdown</value>
+                            <actions>
+                                <action name="hide_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>hide</callback></action>
+                                <action name="hide_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>hide</callback></action>
+                                <action name="hide_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>hide</callback></action>
+                                <action name="hide_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>hide</callback></action>
+                                <action name="show_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>show</callback></action>
+                            </actions>
+                        </rule>
+                    </rules>
+                </switcherConfig>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\BannerType"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Common link/CTA ===================== -->
+    <fieldset name="link">
+        <settings>
+            <label translate="true">Link</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="url" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Target URL</label>
+            </settings>
+        </field>
+        <field name="open_new_tab" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Open in New Tab</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Type: Image ===================== -->
+    <fieldset name="content_image">
+        <settings>
+            <label translate="true">Image Content</label>
+        </settings>
+        <field name="image" formElement="imageUploader">
+            <settings>
+                <label translate="true">Desktop Image</label>
+                <componentType>imageUploader</componentType>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <allowedExtensions>jpg jpeg gif png webp</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                        <uploaderConfig>
+                            <param xsi:type="string" name="url">etechflow_bannerslider/banner/upload</param>
+                        </uploaderConfig>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+        <field name="image_mobile" formElement="imageUploader">
+            <settings>
+                <label translate="true">Mobile Image</label>
+                <componentType>imageUploader</componentType>
+                <notice translate="true">Optional. Shown on small screens for better performance.</notice>
+            </settings>
+            <formElements>
+                <imageUploader>
+                    <settings>
+                        <allowedExtensions>jpg jpeg gif png webp</allowedExtensions>
+                        <maxFileSize>4194304</maxFileSize>
+                        <uploaderConfig>
+                            <param xsi:type="string" name="url">etechflow_bannerslider/banner/upload</param>
+                        </uploaderConfig>
+                    </settings>
+                </imageUploader>
+            </formElements>
+        </field>
+        <field name="alt_text" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Alt Text</label>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Type: Video ===================== -->
+    <fieldset name="content_video">
+        <settings>
+            <label translate="true">Video Content</label>
+            <visible>false</visible>
+        </settings>
+        <field name="video_type" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Video Provider</label>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\VideoType"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="video_url" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Video URL / ID</label>
+                <notice translate="true">Full MP4 URL, or the YouTube/Vimeo video ID or URL.</notice>
+            </settings>
+        </field>
+        <field name="video_autoplay" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Autoplay</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap><map name="false" xsi:type="number">0</map><map name="true" xsi:type="number">1</map></valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="video_muted" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Muted</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap><map name="false" xsi:type="number">0</map><map name="true" xsi:type="number">1</map></valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Type: HTML ===================== -->
+    <fieldset name="content_html">
+        <settings>
+            <label translate="true">HTML / Rich Content</label>
+            <visible>false</visible>
+        </settings>
+        <field name="content" formElement="wysiwyg">
+            <settings>
+                <label translate="true">Content</label>
+                <dataType>text</dataType>
+                <wysiwyg>true</wysiwyg>
+            </settings>
+            <formElements>
+                <wysiwyg>
+                    <settings>
+                        <rows>12</rows>
+                    </settings>
+                </wysiwyg>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Type: Product ===================== -->
+    <fieldset name="content_product">
+        <settings>
+            <label translate="true">Product</label>
+            <visible>false</visible>
+        </settings>
+        <field name="product_id" formElement="input">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Product ID</label>
+                <notice translate="true">The product whose image, price and add-to-cart will render on the slide.</notice>
+                <validation>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Type: Countdown ===================== -->
+    <fieldset name="content_countdown">
+        <settings>
+            <label translate="true">Countdown Timer</label>
+            <visible>false</visible>
+        </settings>
+        <field name="countdown_to" formElement="date">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Countdown To</label>
+            </settings>
+            <formElements>
+                <date>
+                    <settings>
+                        <options>
+                            <option name="showsTime" xsi:type="boolean">true</option>
+                            <option name="dateFormat" xsi:type="string">yyyy-MM-dd</option>
+                        </options>
+                    </settings>
+                </date>
+            </formElements>
+        </field>
+        <field name="countdown_hide_expired" formElement="checkbox">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Hide When Expired</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap><map name="false" xsi:type="number">0</map><map name="true" xsi:type="number">1</map></valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Scheduling ===================== -->
+    <fieldset name="scheduling">
+        <settings>
+            <label translate="true">Scheduling</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="from_date" formElement="date">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Active From</label>
+            </settings>
+        </field>
+        <field name="to_date" formElement="date">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Active To</label>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ===================== Visibility ===================== -->
+    <fieldset name="visibility">
+        <settings>
+            <label translate="true">Visibility</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="store_ids" formElement="multiselect">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Store Views</label>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\StoreView"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="customer_group_ids" formElement="multiselect">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Customer Groups</label>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Magento\Customer\Model\Config\Source\Group\Multiselect"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

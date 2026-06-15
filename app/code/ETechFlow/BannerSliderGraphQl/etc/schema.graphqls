@@ -1,0 +1,54 @@
+# ETechFlow Banner Slider — GraphQL schema (headless / PWA / Hyvä Checkout)
+
+type Query {
+    etechflowBannerSlider(
+        slider_id: Int
+        placement: String @doc(description: "Layout handle or custom placement key")
+    ): EtechflowSlider
+    @doc(description: "Fetch a targeted, A/B-allocated slider with its visible banners for the current context.")
+}
+
+type Mutation {
+    etechflowTrackBannerEvent(input: EtechflowBannerEventInput!): EtechflowTrackResult
+    @doc(description: "Record an impression / click / add_to_cart / order attribution event.")
+}
+
+type EtechflowSlider {
+    slider_id: Int
+    title: String
+    autoplay: Boolean
+    autoplay_speed: Int
+    animation_effect: String
+    show_arrows: Boolean
+    show_bullets: Boolean
+    is_loop: Boolean
+    banners: [EtechflowBanner]
+}
+
+type EtechflowBanner {
+    banner_id: Int
+    type: String @doc(description: "image | video | html | product | countdown")
+    name: String
+    image: String
+    image_mobile: String
+    alt_text: String
+    url: String
+    open_new_tab: Boolean
+    video_type: String
+    video_url: String
+    content: String
+    product_id: Int
+    countdown_to: String
+    variant: String @doc(description: "A/B variant label served to this visitor")
+}
+
+input EtechflowBannerEventInput {
+    banner_id: Int!
+    slider_id: Int!
+    variant: String
+    event_type: String! @doc(description: "impression | click | add_to_cart | order")
+}
+
+type EtechflowTrackResult {
+    success: Boolean
+}
