@@ -21,7 +21,7 @@ class Checkout extends Action
     public const ADMIN_RESOURCE = 'ETechFlow_BannerSlider::config';
 
     private const MODULE_ID = 'banner-slider';
-    private const CHECKOUT_URL = 'https://license-service.etechflow.com/api/license/checkout';
+    private const CHECKOUT_URL = 'https://module.etechflow.com/api/license/checkout';
     private const PORTAL_TOKEN = 'lcsk_REDACTED_PORTAL_TOKEN';
 
     public function __construct(
