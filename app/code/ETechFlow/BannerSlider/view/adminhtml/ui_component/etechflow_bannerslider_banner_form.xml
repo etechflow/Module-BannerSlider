@@ -287,12 +287,12 @@
             <settings>
                 <label translate="true">Content</label>
                 <dataType>text</dataType>
-                <wysiwyg>true</wysiwyg>
             </settings>
             <formElements>
                 <wysiwyg>
                     <settings>
                         <rows>12</rows>
+                        <wysiwyg>true</wysiwyg>
                     </settings>
                 </wysiwyg>
             </formElements>

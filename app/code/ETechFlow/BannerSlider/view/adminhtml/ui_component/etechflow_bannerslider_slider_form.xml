@@ -281,7 +281,6 @@
                     <settings>
                         <dataType>text</dataType>
                         <label translate="true">A/B Variant</label>
-                        <default>default</default>
                         <notice translate="true">Group banners under variant labels (default, A, B…) for A/B tests.</notice>
                     </settings>
                 </field>
@@ -289,7 +288,6 @@
                     <settings>
                         <dataType>number</dataType>
                         <label translate="true">Weight</label>
-                        <default>1</default>
                         <validation>
                             <rule name="validate-digits" xsi:type="boolean">true</rule>
                         </validation>
