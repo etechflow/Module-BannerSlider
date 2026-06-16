@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Load the Hyvä banner-slider Alpine runtime once per page (deferred). It only
+ * registers the etfBannerSlider component; no work runs until a slider widget
+ * uses it.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <script src="ETechFlow_BannerSliderHyva::js/slider.js" defer="true"/>
+    </head>
+</page>
