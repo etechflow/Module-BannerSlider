@@ -6,6 +6,7 @@
 $licenseKey     = (string) $block->getData('license_key');
 $plan           = (string) $block->getData('plan');
 $error          = (string) $block->getData('error');
+$pending        = (bool) $block->getData('pending');
 $settingsUrl    = (string) $block->getData('settings_url');
 $managementUrl  = (string) $block->getData('management_url');
 ?>
@@ -26,6 +27,7 @@ $managementUrl  = (string) $block->getData('management_url');
 .etf-btn-primary { background:linear-gradient(135deg,#1a73e8,#0d5fc4); color:#fff; }
 .etf-btn-ghost { background:transparent; border:1px solid #2a3f55; color:#93c5fd; }
 .etf-err-card { background:#2a1a1a; border:1px solid #c0392b; border-radius:8px; padding:16px; color:#e74c3c; font-size:13px; }
+.etf-pend-card { background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.35); border-radius:8px; padding:16px; color:#f59e0b; font-size:13px; text-align:left; }
 </style>
 
 <div class="etf-act">
@@ -53,6 +55,18 @@ $managementUrl  = (string) $block->getData('management_url');
       <div class="etf-cta-row">
         <a href="<?= $escaper->escapeUrl($managementUrl); ?>" class="etf-btn etf-btn-primary">&#127912; Open Banner Slider</a>
         <a href="<?= $escaper->escapeUrl($settingsUrl); ?>" class="etf-btn etf-btn-ghost">&#9881;&#65039; Settings</a>
+      </div>
+    <?php elseif ($pending): ?>
+      <div class="etf-act-icon">&#9203;</div>
+      <h1>Payment received!</h1>
+      <p>Your subscription is being set up. Your license key is generated automatically a few moments after payment.</p>
+      <div class="etf-pend-card">
+        <strong>Your key is being issued.</strong>
+        Refresh this page in a few seconds, or open your eTechFlow portal, copy the <strong>SP-XXXX</strong> key for this store, and paste it under <strong>Enter License Key</strong>.
+      </div>
+      <div class="etf-cta-row">
+        <a href="" onclick="location.reload(); return false;" class="etf-btn etf-btn-primary">&#8635; Refresh</a>
+        <a href="<?= $escaper->escapeUrl($settingsUrl); ?>" class="etf-btn etf-btn-ghost">&#128273; Enter License Key</a>
       </div>
     <?php else: ?>
       <div class="etf-act-icon">&#9888;&#65039;</div>
