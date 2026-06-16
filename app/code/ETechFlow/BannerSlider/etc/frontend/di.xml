@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Expose visitor context for client-side, FPC-safe banner targeting. -->
+    <type name="Magento\Customer\CustomerData\SectionPool">
+        <arguments>
+            <argument name="sectionSourceMap" xsi:type="array">
+                <item name="etechflow-bannerslider" xsi:type="string">ETechFlow\BannerSlider\CustomerData\BannerContext</item>
+            </argument>
+        </arguments>
+    </type>
+
+</config>

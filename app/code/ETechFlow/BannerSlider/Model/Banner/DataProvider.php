@@ -6,6 +6,7 @@ namespace ETechFlow\BannerSlider\Model\Banner;
 use ETechFlow\BannerSlider\Api\Data\BannerInterface;
 use ETechFlow\BannerSlider\Model\ResourceModel\Banner\Collection;
 use ETechFlow\BannerSlider\Model\ResourceModel\Banner\CollectionFactory;
+use ETechFlow\BannerSlider\Model\Targeting\TargetingRules;
 use Magento\Framework\App\Request\DataPersistorInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -32,6 +33,7 @@ class DataProvider extends AbstractDataProvider
         CollectionFactory $collectionFactory,
         private readonly DataPersistorInterface $dataPersistor,
         private readonly StoreManagerInterface $storeManager,
+        private readonly TargetingRules $targetingRules,
         array $meta = [],
         array $data = []
     ) {
@@ -51,6 +53,9 @@ class DataProvider extends AbstractDataProvider
             $data = $banner->getData();
             $data[BannerInterface::STORE_IDS] = $banner->getStoreIds();
             $data[BannerInterface::CUSTOMER_GROUP_IDS] = $banner->getCustomerGroupIds();
+
+            // Expand the stored targeting JSON into the form's tgt_* fields.
+            $data = array_merge($data, $this->targetingRules->toFormFields($banner->getConditionsSerialized()));
 
             foreach ([BannerInterface::IMAGE, BannerInterface::IMAGE_MOBILE] as $field) {
                 $data[$field] = $this->buildImagePreview($banner->getData($field));

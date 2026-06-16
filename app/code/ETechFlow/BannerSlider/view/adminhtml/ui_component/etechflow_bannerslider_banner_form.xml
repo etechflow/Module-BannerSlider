@@ -408,4 +408,146 @@
             </formElements>
         </field>
     </fieldset>
+
+    <!-- ===================== Smart Targeting (Feature 1) ===================== -->
+    <fieldset name="targeting">
+        <settings>
+            <label translate="true">Smart Targeting</label>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+            <additionalClasses>
+                <class name="admin__fieldset-note">true</class>
+            </additionalClasses>
+        </settings>
+        <field name="tgt_login" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Login State</label>
+                <notice translate="true">All targeting rules below are combined with AND and evaluated in the browser, so the slider stays Full Page Cache friendly.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\LoginState"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="tgt_devices" formElement="multiselect" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Devices</label>
+                <notice translate="true">Leave empty to show on all devices.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\TargetDevice"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="tgt_countries" formElement="multiselect" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Countries</label>
+                <notice translate="true">Requires a GeoIP / CDN country header (e.g. Cloudflare). Leave empty for all countries.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Magento\Directory\Model\Config\Source\Country"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="tgt_cart_qty_min" formElement="input" sortOrder="40">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Cart Quantity From</label>
+                <validation>
+                    <rule name="validate-zero-or-greater" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="tgt_cart_qty_max" formElement="input" sortOrder="50">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Cart Quantity To</label>
+                <validation>
+                    <rule name="validate-zero-or-greater" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="tgt_cart_subtotal_min" formElement="input" sortOrder="60">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Cart Subtotal From</label>
+                <notice translate="true">In the store base currency.</notice>
+                <validation>
+                    <rule name="validate-zero-or-greater" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="tgt_cart_subtotal_max" formElement="input" sortOrder="70">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Cart Subtotal To</label>
+                <validation>
+                    <rule name="validate-zero-or-greater" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="tgt_days" formElement="multiselect" sortOrder="80">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Days of Week</label>
+                <notice translate="true">Leave empty for every day.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="ETechFlow\BannerSlider\Model\Source\DayOfWeek"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="tgt_hour_from" formElement="input" sortOrder="90">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Hour From (0-23)</label>
+                <notice translate="true">Visitor local time. If "From" is greater than "To", the window spans midnight.</notice>
+                <validation>
+                    <rule name="validate-digits-range" xsi:type="string">0-23</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="tgt_hour_to" formElement="input" sortOrder="100">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Hour To (0-23)</label>
+                <validation>
+                    <rule name="validate-digits-range" xsi:type="string">0-23</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="tgt_utm_source" formElement="input" sortOrder="110">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">UTM Source</label>
+            </settings>
+        </field>
+        <field name="tgt_utm_medium" formElement="input" sortOrder="120">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">UTM Medium</label>
+            </settings>
+        </field>
+        <field name="tgt_utm_campaign" formElement="input" sortOrder="130">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">UTM Campaign</label>
+            </settings>
+        </field>
+    </fieldset>
 </form>

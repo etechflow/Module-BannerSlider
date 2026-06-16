@@ -6,6 +6,7 @@ namespace ETechFlow\BannerSlider\Controller\Adminhtml\Banner;
 use ETechFlow\BannerSlider\Api\Data\BannerInterface;
 use ETechFlow\BannerSlider\Api\BannerRepositoryInterface;
 use ETechFlow\BannerSlider\Model\BannerFactory;
+use ETechFlow\BannerSlider\Model\Targeting\TargetingRules;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\View\Result\Redirect;
@@ -27,7 +28,8 @@ class Save extends Action
         private readonly BannerRepositoryInterface $bannerRepository,
         private readonly BannerFactory $bannerFactory,
         private readonly DataPersistorInterface $dataPersistor,
-        private readonly ImageUploader $imageUploader
+        private readonly ImageUploader $imageUploader,
+        private readonly TargetingRules $targetingRules
     ) {
         parent::__construct($context);
     }
@@ -85,6 +87,13 @@ class Save extends Action
             if (isset($data[$key]) && is_array($data[$key])) {
                 $data[$key] = implode(',', $data[$key]);
             }
+        }
+
+        // Collapse the targeting fields into conditions_serialized, then drop
+        // them — they are form-only, not table columns.
+        $data[BannerInterface::CONDITIONS_SERIALIZED] = $this->targetingRules->toJson($data);
+        foreach ($this->targetingRules->fieldNames() as $field) {
+            unset($data[$field]);
         }
 
         foreach (self::IMAGE_FIELDS as $field) {

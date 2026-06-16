@@ -3,14 +3,38 @@
  * @var \ETechFlow\BannerSlider\Block\Slider $block
  * @var \Magento\Framework\Escaper $escaper
  */
+
+use ETechFlow\BannerSlider\Api\Data\BannerInterface;
+
 if (!$block->isModuleEnabled() || !$block->hasBanners()) {
     return;
 }
 
 $slider = $block->getSlider();
-$banners = $block->getBanners();
 $htmlId = $block->getSliderHtmlId();
 $showTitle = (bool)$block->getData('show_title');
+
+// Pre-resolve slides so product banners whose product is unavailable are
+// dropped up-front — this keeps the track, the bullets and the JS indices
+// in sync (both loops below iterate the same $slides array).
+$slides = [];
+foreach ($block->getBanners() as $row) {
+    /** @var \ETechFlow\BannerSlider\Model\Banner $banner */
+    $banner = $row['banner'];
+    if ($banner->getType() === BannerInterface::TYPE_PRODUCT) {
+        $product = $block->getProductData($banner);
+        if (!$product) {
+            continue;
+        }
+        $row['product'] = $product;
+    }
+    $row['target'] = $block->getTargetingJson($banner);
+    $slides[] = $row;
+}
+if (!$slides) {
+    return;
+}
+$slideCount = count($slides);
 ?>
 <div id="<?= $escaper->escapeHtmlAttr($htmlId) ?>"
      class="etf-bannerslider effect-<?= $escaper->escapeHtmlAttr($slider->getAnimationEffect()) ?>"
@@ -22,56 +46,147 @@ $showTitle = (bool)$block->getData('show_title');
 
     <div class="etf-bannerslider__viewport">
         <ul class="etf-bannerslider__track">
-            <?php foreach ($banners as $index => $row): ?>
+            <?php foreach ($slides as $index => $row): ?>
                 <?php
                 /** @var \ETechFlow\BannerSlider\Model\Banner $banner */
                 $banner = $row['banner'];
+                $type = $banner->getType();
                 $isFirst = $index === 0;
-                $desktop = $block->getMediaUrl($banner->getImage());
-                $mobile = $banner->getImageMobile() ? $block->getMediaUrl($banner->getImageMobile()) : $desktop;
                 $href = $banner->getUrl();
                 $target = $banner->getOpenNewTab() ? '_blank' : '_self';
-                $alt = $banner->getAltText() ?: $banner->getName();
+                // Product banners carry their own links/buttons; videos must stay
+                // interactive — so only wrap the simple visual types.
+                $wrap = $href && in_array(
+                    $type,
+                    [BannerInterface::TYPE_IMAGE, BannerInterface::TYPE_HTML, BannerInterface::TYPE_COUNTDOWN],
+                    true
+                );
                 ?>
-                <li class="etf-bannerslider__slide<?= $isFirst ? ' is-active' : '' ?>"
+                <?php $targetJson = $row['target']; ?>
+                <li class="etf-bannerslider__slide etf-bannerslider__slide--<?= $escaper->escapeHtmlAttr($type) ?><?= $isFirst ? ' is-active' : '' ?><?= $targetJson ? ' is-pending-target' : '' ?>"
                     data-banner-id="<?= (int)$banner->getId() ?>"
                     data-variant="<?= $escaper->escapeHtmlAttr($row['variant']) ?>"
+                    <?php if ($targetJson): ?>data-etf-target="<?= $escaper->escapeHtmlAttr($targetJson) ?>"<?php endif; ?>
                     data-index="<?= (int)$index ?>">
-                    <?php if ($href): ?>
+                    <?php if ($wrap): ?>
                         <a href="<?= $escaper->escapeUrl($href) ?>"
                            target="<?= $escaper->escapeHtmlAttr($target) ?>"
+                           rel="<?= $target === '_blank' ? 'noopener' : '' ?>"
                            class="etf-bannerslider__link"
                            data-etf-track="click">
                     <?php endif; ?>
 
-                    <?php // Phase 4 renders image banners; other types are completed in Phase 5. ?>
-                    <?php if ($banner->getType() === \ETechFlow\BannerSlider\Api\Data\BannerInterface::TYPE_HTML): ?>
-                        <div class="etf-bannerslider__html"><?= /* @noEscape */ $banner->getContent() ?></div>
-                    <?php elseif ($desktop): ?>
-                        <picture>
-                            <?php if ($mobile !== $desktop): ?>
-                                <source media="(max-width: 768px)" srcset="<?= $escaper->escapeUrl($mobile) ?>"/>
-                            <?php endif; ?>
-                            <img
-                                <?php if ($isFirst): ?>
-                                    src="<?= $escaper->escapeUrl($desktop) ?>"
-                                    loading="eager" fetchpriority="high"
-                                <?php else: ?>
-                                    data-src="<?= $escaper->escapeUrl($desktop) ?>"
-                                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
-                                    loading="lazy"
+                    <?php switch ($type):
+                        case BannerInterface::TYPE_VIDEO: ?>
+                            <?php $v = $block->getVideoData($banner); ?>
+                            <div class="etf-bannerslider__video"
+                                 data-etf-video="<?= $escaper->escapeHtmlAttr($v['provider']) ?>"
+                                 data-autoplay="<?= $v['autoplay'] ? '1' : '0' ?>"
+                                 <?php if ($v['embed_url']): ?>data-embed="<?= $escaper->escapeHtmlAttr($v['embed_url']) ?>"<?php endif; ?>>
+                                <?php if ($v['provider'] === 'mp4' && $v['src']): ?>
+                                    <video class="etf-bannerslider__video-el" preload="none"
+                                           playsinline loop
+                                           <?= $v['muted'] ? 'muted' : '' ?>
+                                           <?= $v['autoplay'] ? 'data-etf-autoplay="1"' : '' ?>>
+                                        <source src="<?= $escaper->escapeUrl($v['src']) ?>" type="video/mp4"/>
+                                    </video>
+                                <?php elseif ($v['embed_url']): ?>
+                                    <button type="button" class="etf-bannerslider__video-play"
+                                            aria-label="<?= $escaper->escapeHtmlAttr(__('Play video')) ?>">
+                                        <span class="etf-bannerslider__video-play-icon" aria-hidden="true">&#9658;</span>
+                                    </button>
                                 <?php endif; ?>
-                                class="etf-bannerslider__image"
-                                alt="<?= $escaper->escapeHtmlAttr($alt) ?>"/>
-                        </picture>
-                    <?php endif; ?>
+                            </div>
+                            <?php break; ?>
 
-                    <?php if ($href): ?></a><?php endif; ?>
+                        <?php case BannerInterface::TYPE_HTML: ?>
+                            <div class="etf-bannerslider__html"><?= /* @noEscape */ $banner->getContent() ?></div>
+                            <?php break; ?>
+
+                        <?php case BannerInterface::TYPE_PRODUCT: ?>
+                            <?php $p = $row['product']; ?>
+                            <div class="etf-bannerslider__product">
+                                <a href="<?= $escaper->escapeUrl($p['url']) ?>" class="etf-bannerslider__product-media">
+                                    <img src="<?= $escaper->escapeUrl($p['image_url']) ?>"
+                                         alt="<?= $escaper->escapeHtmlAttr($p['name']) ?>"
+                                         loading="<?= $isFirst ? 'eager' : 'lazy' ?>"/>
+                                </a>
+                                <div class="etf-bannerslider__product-info">
+                                    <a href="<?= $escaper->escapeUrl($p['url']) ?>" class="etf-bannerslider__product-name">
+                                        <?= $escaper->escapeHtml($p['name']) ?>
+                                    </a>
+                                    <div class="etf-bannerslider__product-price">
+                                        <?php if ($p['regular_price']): ?>
+                                            <span class="etf-bannerslider__price-old"><?= $escaper->escapeHtml($p['regular_price']) ?></span>
+                                        <?php endif; ?>
+                                        <span class="etf-bannerslider__price-final"><?= $escaper->escapeHtml($p['final_price']) ?></span>
+                                    </div>
+                                    <div class="etf-bannerslider__product-actions">
+                                        <?php if ($p['in_stock']): ?>
+                                            <button type="button" class="action primary etf-bannerslider__tocart"
+                                                    data-post='<?= /* @noEscape */ $p['add_to_cart'] ?>'>
+                                                <span><?= $escaper->escapeHtml(__('Add to Cart')) ?></span>
+                                            </button>
+                                        <?php else: ?>
+                                            <span class="etf-bannerslider__unavailable"><?= $escaper->escapeHtml(__('Out of stock')) ?></span>
+                                        <?php endif; ?>
+                                        <a href="<?= $escaper->escapeUrl($p['url']) ?>" class="action secondary etf-bannerslider__view">
+                                            <?= $escaper->escapeHtml(__('View Product')) ?>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php break; ?>
+
+                        <?php case BannerInterface::TYPE_COUNTDOWN: ?>
+                            <?php $cd = $block->getCountdownData($banner); ?>
+                            <div class="etf-bannerslider__countdown"
+                                 <?php if ($cd): ?>data-etf-countdown="<?= (int)$cd['ts'] ?>"
+                                 data-hide-expired="<?= $cd['hide_expired'] ? '1' : '0' ?>"<?php endif; ?>>
+                                <?php if ($banner->getName()): ?>
+                                    <div class="etf-bannerslider__countdown-label"><?= $escaper->escapeHtml($banner->getName()) ?></div>
+                                <?php endif; ?>
+                                <div class="etf-bannerslider__countdown-units">
+                                    <span class="etf-bannerslider__countdown-unit"><b data-unit="days">--</b><i><?= $escaper->escapeHtml(__('Days')) ?></i></span>
+                                    <span class="etf-bannerslider__countdown-unit"><b data-unit="hours">--</b><i><?= $escaper->escapeHtml(__('Hours')) ?></i></span>
+                                    <span class="etf-bannerslider__countdown-unit"><b data-unit="minutes">--</b><i><?= $escaper->escapeHtml(__('Min')) ?></i></span>
+                                    <span class="etf-bannerslider__countdown-unit"><b data-unit="seconds">--</b><i><?= $escaper->escapeHtml(__('Sec')) ?></i></span>
+                                </div>
+                            </div>
+                            <?php break; ?>
+
+                        <?php default: ?>
+                            <?php
+                            $desktop = $block->getMediaUrl($banner->getImage());
+                            $mobile = $banner->getImageMobile() ? $block->getMediaUrl($banner->getImageMobile()) : $desktop;
+                            $alt = $banner->getAltText() ?: $banner->getName();
+                            ?>
+                            <?php if ($desktop): ?>
+                                <picture>
+                                    <?php if ($mobile !== $desktop): ?>
+                                        <source media="(max-width: 768px)" srcset="<?= $escaper->escapeUrl($mobile) ?>"/>
+                                    <?php endif; ?>
+                                    <img
+                                        <?php if ($isFirst): ?>
+                                            src="<?= $escaper->escapeUrl($desktop) ?>"
+                                            loading="eager" fetchpriority="high"
+                                        <?php else: ?>
+                                            data-src="<?= $escaper->escapeUrl($desktop) ?>"
+                                            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+                                            loading="lazy"
+                                        <?php endif; ?>
+                                        class="etf-bannerslider__image"
+                                        alt="<?= $escaper->escapeHtmlAttr($alt) ?>"/>
+                                </picture>
+                            <?php endif; ?>
+                    <?php endswitch; ?>
+
+                    <?php if ($wrap): ?></a><?php endif; ?>
                 </li>
             <?php endforeach; ?>
         </ul>
 
-        <?php if ($slider->getShowArrows() && count($banners) > 1): ?>
+        <?php if ($slider->getShowArrows() && $slideCount > 1): ?>
             <button type="button" class="etf-bannerslider__arrow etf-bannerslider__arrow--prev"
                     aria-label="<?= $escaper->escapeHtmlAttr(__('Previous')) ?>">&#8249;</button>
             <button type="button" class="etf-bannerslider__arrow etf-bannerslider__arrow--next"
@@ -79,14 +194,14 @@ $showTitle = (bool)$block->getData('show_title');
         <?php endif; ?>
     </div>
 
-    <?php if ($slider->getShowBullets() && count($banners) > 1): ?>
+    <?php if ($slider->getShowBullets() && $slideCount > 1): ?>
         <div class="etf-bannerslider__bullets" role="tablist">
-            <?php foreach ($banners as $index => $row): ?>
+            <?php for ($i = 0; $i < $slideCount; $i++): ?>
                 <button type="button"
-                        class="etf-bannerslider__bullet<?= $index === 0 ? ' is-active' : '' ?>"
-                        data-index="<?= (int)$index ?>"
-                        aria-label="<?= $escaper->escapeHtmlAttr(__('Go to slide %1', $index + 1)) ?>"></button>
-            <?php endforeach; ?>
+                        class="etf-bannerslider__bullet<?= $i === 0 ? ' is-active' : '' ?>"
+                        data-index="<?= (int)$i ?>"
+                        aria-label="<?= $escaper->escapeHtmlAttr(__('Go to slide %1', $i + 1)) ?>"></button>
+            <?php endfor; ?>
         </div>
     <?php endif; ?>
 </div>

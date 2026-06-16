@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Customer:etc/sections.xsd">
+
+    <!-- Refresh the targeting context when login state or the cart changes. -->
+    <action name="customer/account/logout">
+        <section name="etechflow-bannerslider"/>
+    </action>
+    <action name="customer/account/loginPost">
+        <section name="etechflow-bannerslider"/>
+    </action>
+    <action name="checkout/cart/add">
+        <section name="etechflow-bannerslider"/>
+    </action>
+    <action name="checkout/cart/delete">
+        <section name="etechflow-bannerslider"/>
+    </action>
+    <action name="checkout/cart/updatePost">
+        <section name="etechflow-bannerslider"/>
+    </action>
+    <action name="checkout/cart/updateItemOptions">
+        <section name="etechflow-bannerslider"/>
+    </action>
+    <action name="checkout/onepage/saveOrder">
+        <section name="etechflow-bannerslider"/>
+    </action>
+
+</config>

@@ -48,7 +48,10 @@ class BannerProvider
         /** @var array<int, Banner> $byId */
         $byId = [];
         foreach ($collection as $banner) {
-            if ($this->isScheduledNow($banner) && $this->isInStore($banner, $storeId)) {
+            if ($this->isScheduledNow($banner)
+                && $this->isInStore($banner, $storeId)
+                && !$this->isExpiredCountdown($banner)
+            ) {
                 $byId[(int)$banner->getId()] = $banner;
             }
         }
@@ -81,6 +84,30 @@ class BannerProvider
             return false;
         }
         return true;
+    }
+
+    /**
+     * Keep an expired countdown banner out of the (cacheable) markup when the
+     * admin chose to hide it on expiry. Non-countdown banners are unaffected.
+     *
+     * @param Banner $banner
+     * @return bool
+     */
+    private function isExpiredCountdown(Banner $banner): bool
+    {
+        if ($banner->getType() !== BannerInterface::TYPE_COUNTDOWN || !$banner->getCountdownHideExpired()) {
+            return false;
+        }
+        $target = $banner->getCountdownTo();
+        if (!$target) {
+            return false;
+        }
+        try {
+            $targetTs = $this->timezone->date($target)->getTimestamp();
+        } catch (\Exception $e) {
+            return false;
+        }
+        return $targetTs <= $this->timezone->date()->getTimestamp();
     }
 
     private function isInStore(Banner $banner, int $storeId): bool
