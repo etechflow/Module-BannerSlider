@@ -2,15 +2,16 @@
 
 type Query {
     etechflowBannerSlider(
-        slider_id: Int
-        placement: String @doc(description: "Layout handle or custom placement key")
+        slider_id: Int! @doc(description: "Slider entity id to render")
     ): EtechflowSlider
-    @doc(description: "Fetch a targeted, A/B-allocated slider with its visible banners for the current context.")
+    @resolver(class: "ETechFlow\\BannerSliderGraphQl\\Model\\Resolver\\BannerSlider")
+    @doc(description: "Active banners for a slider in the current store. Targeting and A/B selection are returned as data for the client to evaluate.")
 }
 
 type Mutation {
     etechflowTrackBannerEvent(input: EtechflowBannerEventInput!): EtechflowTrackResult
-    @doc(description: "Record an impression / click / add_to_cart / order attribution event.")
+    @resolver(class: "ETechFlow\\BannerSliderGraphQl\\Model\\Resolver\\TrackBannerEvent")
+    @doc(description: "Record an impression / click / add_to_cart event for a banner.")
 }
 
 type EtechflowSlider {
@@ -18,10 +19,18 @@ type EtechflowSlider {
     title: String
     autoplay: Boolean
     autoplay_speed: Int
+    animation_speed: Int
     animation_effect: String
     show_arrows: Boolean
     show_bullets: Boolean
     is_loop: Boolean
+    pause_on_hover: Boolean
+    lazy_load: Boolean
+    is_ab_test: Boolean @doc(description: "True while an A/B test is running; client should split traffic across variants by weight.")
+    ab_goal: String @doc(description: "ctr | add_to_cart | revenue")
+    ab_winner: String @doc(description: "Concluded winning variant, if any (then only that variant is returned).")
+    track: Boolean @doc(description: "Whether event tracking is enabled.")
+    attribution_days: Int
     banners: [EtechflowBanner]
 }
 
@@ -29,24 +38,31 @@ type EtechflowBanner {
     banner_id: Int
     type: String @doc(description: "image | video | html | product | countdown")
     name: String
-    image: String
-    image_mobile: String
+    image: String @doc(description: "Absolute desktop image URL")
+    image_mobile: String @doc(description: "Absolute mobile image URL")
     alt_text: String
     url: String
     open_new_tab: Boolean
-    video_type: String
+    video_type: String @doc(description: "mp4 | youtube | vimeo")
     video_url: String
-    content: String
+    video_autoplay: Boolean
+    video_muted: Boolean
+    content: String @doc(description: "Raw HTML for html-type banners")
     product_id: Int
-    countdown_to: String
-    variant: String @doc(description: "A/B variant label served to this visitor")
+    product_sku: String @doc(description: "Resolved SKU for product banners; query the native products field for full data.")
+    countdown_to: String @doc(description: "Configured countdown target (store time)")
+    countdown_at_ms: Float @doc(description: "Absolute countdown target as epoch milliseconds (UTC) for client timers.")
+    countdown_hide_expired: Boolean
+    variant: String @doc(description: "A/B variant label")
+    weight: Int @doc(description: "A/B traffic weight for this variant")
+    targeting: String @doc(description: "JSON targeting rules for client-side evaluation (empty when untargeted).")
 }
 
 input EtechflowBannerEventInput {
     banner_id: Int!
     slider_id: Int!
     variant: String
-    event_type: String! @doc(description: "impression | click | add_to_cart | order")
+    event_type: String! @doc(description: "impression | click | add_to_cart")
 }
 
 type EtechflowTrackResult {
