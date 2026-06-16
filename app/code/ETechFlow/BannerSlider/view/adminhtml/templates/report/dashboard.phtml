@@ -1,0 +1,146 @@
+<?php
+/**
+ * @var \ETechFlow\BannerSlider\Block\Adminhtml\Report\Dashboard $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$kpis = $block->getKpis();
+$rows = $block->getReportData();
+$abReports = $block->getAbReports();
+?>
+<style>
+    .etf-bs-report__filter { display: flex; align-items: flex-end; gap: 14px; margin-bottom: 22px; flex-wrap: wrap; }
+    .etf-bs-report__filter label { display: block; font-weight: 600; margin-bottom: 4px; }
+    .etf-bs-report__kpis { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 26px; }
+    .etf-bs-report__kpi { flex: 1 1 140px; background: #fff; border: 1px solid #e3e3e3; border-radius: 6px; padding: 16px 18px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+    .etf-bs-report__kpi b { display: block; font-size: 26px; line-height: 1.1; color: #1a1a1a; }
+    .etf-bs-report__kpi span { display: block; margin-top: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: #777; }
+    .etf-bs-report table { width: 100%; border-collapse: collapse; background: #fff; }
+    .etf-bs-report th, .etf-bs-report td { padding: 10px 12px; border-bottom: 1px solid #ededed; text-align: right; }
+    .etf-bs-report th:first-child, .etf-bs-report td:first-child,
+    .etf-bs-report th:nth-child(2), .etf-bs-report td:nth-child(2) { text-align: left; }
+    .etf-bs-report th { background: #f5f5f5; font-weight: 600; }
+    .etf-bs-report__empty { padding: 28px; text-align: center; color: #888; background: #fff; border: 1px solid #ededed; }
+    .etf-bs-report__type { display: inline-block; padding: 1px 8px; font-size: 11px; border-radius: 10px; background: #eef1f6; color: #46648c; text-transform: capitalize; }
+    .etf-bs-ab { margin-top: 34px; }
+    .etf-bs-ab h2 { font-size: 18px; margin: 0 0 14px; }
+    .etf-bs-ab__test { margin-bottom: 22px; border: 1px solid #e3e3e3; border-radius: 6px; overflow: hidden; }
+    .etf-bs-ab__head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px; background: #f5f5f5; }
+    .etf-bs-ab__head b { font-size: 15px; }
+    .etf-bs-ab__badge { display: inline-block; padding: 2px 9px; font-size: 11px; border-radius: 10px; text-transform: uppercase; letter-spacing: .03em; }
+    .etf-bs-ab__badge--running { background: #fff3cd; color: #8a6d3b; }
+    .etf-bs-ab__badge--won { background: #d4edda; color: #2e6b39; }
+    .etf-bs-ab tr.is-leader td { background: #f1f9f2; font-weight: 600; }
+</style>
+
+<div class="etf-bs-report">
+    <form class="etf-bs-report__filter" method="get" action="<?= $escaper->escapeUrl($block->getFormAction()) ?>">
+        <div>
+            <label for="etf-from"><?= $escaper->escapeHtml(__('From')) ?></label>
+            <input type="date" id="etf-from" name="from" value="<?= $escaper->escapeHtmlAttr($block->getFromDate()) ?>"/>
+        </div>
+        <div>
+            <label for="etf-to"><?= $escaper->escapeHtml(__('To')) ?></label>
+            <input type="date" id="etf-to" name="to" value="<?= $escaper->escapeHtmlAttr($block->getToDate()) ?>"/>
+        </div>
+        <button type="submit" class="action-default scalable"><?= $escaper->escapeHtml(__('Apply')) ?></button>
+        <a class="action-default scalable" href="<?= $escaper->escapeUrl($block->getExportUrl()) ?>">
+            <?= $escaper->escapeHtml(__('Export CSV')) ?>
+        </a>
+    </form>
+
+    <div class="etf-bs-report__kpis">
+        <div class="etf-bs-report__kpi"><b><?= $escaper->escapeHtml(number_format((float)$kpis['impressions'])) ?></b><span><?= $escaper->escapeHtml(__('Impressions')) ?></span></div>
+        <div class="etf-bs-report__kpi"><b><?= $escaper->escapeHtml(number_format((float)$kpis['clicks'])) ?></b><span><?= $escaper->escapeHtml(__('Clicks')) ?></span></div>
+        <div class="etf-bs-report__kpi"><b><?= $escaper->escapeHtml($kpis['ctr']) ?>%</b><span><?= $escaper->escapeHtml(__('CTR')) ?></span></div>
+        <div class="etf-bs-report__kpi"><b><?= $escaper->escapeHtml(number_format((float)$kpis['add_to_cart'])) ?></b><span><?= $escaper->escapeHtml(__('Add to Cart')) ?></span></div>
+        <div class="etf-bs-report__kpi"><b><?= $escaper->escapeHtml(number_format((float)$kpis['orders'])) ?></b><span><?= $escaper->escapeHtml(__('Orders')) ?></span></div>
+        <div class="etf-bs-report__kpi"><b><?= $escaper->escapeHtml($kpis['cvr']) ?>%</b><span><?= $escaper->escapeHtml(__('Click→Order')) ?></span></div>
+        <div class="etf-bs-report__kpi"><b><?= /* @noEscape */ $block->formatPrice((float)$kpis['revenue']) ?></b><span><?= $escaper->escapeHtml(__('Revenue')) ?></span></div>
+    </div>
+
+    <?php if (!$rows): ?>
+        <div class="etf-bs-report__empty">
+            <?= $escaper->escapeHtml(__('No banner activity recorded for this period yet.')) ?>
+        </div>
+    <?php else: ?>
+        <table>
+            <thead>
+                <tr>
+                    <th><?= $escaper->escapeHtml(__('Banner')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Type')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Impressions')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Clicks')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('CTR')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Add to Cart')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Orders')) ?></th>
+                    <th><?= $escaper->escapeHtml(__('Revenue')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($rows as $row): ?>
+                    <tr>
+                        <td><?= $escaper->escapeHtml($row['name']) ?></td>
+                        <td><?php if ($row['type']): ?><span class="etf-bs-report__type"><?= $escaper->escapeHtml($row['type']) ?></span><?php endif; ?></td>
+                        <td><?= $escaper->escapeHtml(number_format((float)$row['impressions'])) ?></td>
+                        <td><?= $escaper->escapeHtml(number_format((float)$row['clicks'])) ?></td>
+                        <td><?= $escaper->escapeHtml($row['ctr']) ?>%</td>
+                        <td><?= $escaper->escapeHtml(number_format((float)$row['add_to_cart'])) ?></td>
+                        <td><?= $escaper->escapeHtml(number_format((float)$row['orders'])) ?></td>
+                        <td><?= /* @noEscape */ $block->formatPrice((float)$row['revenue']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <?php if ($abReports): ?>
+        <div class="etf-bs-ab">
+            <h2><?= $escaper->escapeHtml(__('A/B Tests')) ?></h2>
+            <?php foreach ($abReports as $test): ?>
+                <?php $highlight = $test['winner'] ?? $test['leader']; ?>
+                <div class="etf-bs-ab__test">
+                    <div class="etf-bs-ab__head">
+                        <b><?= $escaper->escapeHtml($test['title']) ?></b>
+                        <span class="etf-bs-report__type"><?= $escaper->escapeHtml(__('Goal: %1', $test['goal'])) ?></span>
+                        <?php if ($test['winner']): ?>
+                            <span class="etf-bs-ab__badge etf-bs-ab__badge--won">
+                                <?= $escaper->escapeHtml(__('Winner: %1', $test['winner'])) ?>
+                            </span>
+                        <?php elseif ($test['running']): ?>
+                            <span class="etf-bs-ab__badge etf-bs-ab__badge--running"><?= $escaper->escapeHtml(__('Running')) ?></span>
+                            <?php if ($test['leader']): ?>
+                                <span class="etf-bs-report__type"><?= $escaper->escapeHtml(__('Leading: %1', $test['leader'])) ?></span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><?= $escaper->escapeHtml(__('Variant')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('Impressions')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('Clicks')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('CTR %')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('ATC %')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('Orders')) ?></th>
+                                <th><?= $escaper->escapeHtml(__('Revenue')) ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($test['variants'] as $variant): ?>
+                                <tr class="<?= $highlight !== null && $variant['variant'] === $highlight ? 'is-leader' : '' ?>">
+                                    <td><?= $escaper->escapeHtml($variant['variant']) ?></td>
+                                    <td><?= $escaper->escapeHtml(number_format((float)$variant['impressions'])) ?></td>
+                                    <td><?= $escaper->escapeHtml(number_format((float)$variant['clicks'])) ?></td>
+                                    <td><?= $escaper->escapeHtml($variant['ctr']) ?>%</td>
+                                    <td><?= $escaper->escapeHtml($variant['atc_rate']) ?>%</td>
+                                    <td><?= $escaper->escapeHtml(number_format((float)$variant['orders'])) ?></td>
+                                    <td><?= /* @noEscape */ $block->formatPrice((float)$variant['revenue']) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</div>

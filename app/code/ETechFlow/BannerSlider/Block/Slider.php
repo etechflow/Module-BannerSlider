@@ -20,6 +20,8 @@ class Slider extends Template
 {
     private const MEDIA_PATH = 'etechflow/bannerslider';
     private const CONFIG_ENABLED = 'etechflow_bannerslider/general/enabled';
+    private const CONFIG_TRACKING = 'etechflow_bannerslider/performance/async_tracking';
+    private const CONFIG_ATTRIBUTION = 'etechflow_bannerslider/analytics/attribution_window';
 
     private ?SliderModel $slider = null;
     private bool $sliderLoaded = false;
@@ -44,6 +46,29 @@ class Slider extends Template
             self::CONFIG_ENABLED,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+    }
+
+    /**
+     * Whether storefront event tracking (impressions/clicks/add-to-cart) is on.
+     */
+    public function isTrackingEnabled(): bool
+    {
+        return $this->_scopeConfig->isSetFlag(
+            self::CONFIG_TRACKING,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Days a banner click stays eligible to be credited with a later order.
+     */
+    public function getAttributionWindow(): int
+    {
+        $days = (int)$this->_scopeConfig->getValue(
+            self::CONFIG_ATTRIBUTION,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        return $days > 0 ? $days : 7;
     }
 
     public function getSliderId(): int
@@ -86,8 +111,40 @@ class Slider extends Template
             return $this->banners;
         }
         $storeId = (int)$this->_storeManager->getStore()->getId();
-        $this->banners = $this->bannerProvider->getActiveBanners((int)$slider->getId(), $storeId);
+        $banners = $this->bannerProvider->getActiveBanners((int)$slider->getId(), $storeId);
+
+        // A concluded A/B test serves only the winning variant. This is the
+        // same for every visitor, so it can be filtered server-side and stay
+        // Full Page Cache friendly; a still-running test renders all variants
+        // and the browser picks one (see getJsConfig + slider.js).
+        $winner = $slider->getAbWinner();
+        if ($winner !== null) {
+            $banners = array_values(array_filter(
+                $banners,
+                static fn ($row) => $row['variant'] === $winner
+            ));
+        }
+
+        $this->banners = $banners;
         return $this->banners;
+    }
+
+    /**
+     * Variant => traffic weight map for a running A/B test, derived from the
+     * rendered banners (first weight seen per variant).
+     *
+     * @return array<string, int>
+     */
+    public function getAbVariants(): array
+    {
+        $map = [];
+        foreach ($this->getBanners() as $row) {
+            $variant = $row['variant'];
+            if (!isset($map[$variant])) {
+                $map[$variant] = max(1, (int)$row['weight']);
+            }
+        }
+        return $map;
     }
 
     public function hasBanners(): bool
@@ -269,6 +326,7 @@ class Slider extends Template
         if (!$slider) {
             return '{}';
         }
+        $abVariants = $this->getAbVariants();
         return $this->json->serialize([
             'autoplay' => $slider->getAutoplay(),
             'autoplaySpeed' => $slider->getAutoplaySpeed(),
@@ -280,6 +338,11 @@ class Slider extends Template
             'pauseOnHover' => $slider->getPauseOnHover(),
             'lazyLoad' => $slider->getLazyLoad(),
             'sliderId' => (int)$slider->getId(),
+            'track' => $this->isTrackingEnabled(),
+            'trackUrl' => $this->getUrl('bannerslider/track/hit'),
+            'attributionDays' => $this->getAttributionWindow(),
+            'abTest' => $slider->getIsAbTest() && $slider->getAbWinner() === null && count($abVariants) >= 2,
+            'abVariants' => $abVariants,
         ]);
     }
 }

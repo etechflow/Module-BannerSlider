@@ -27,6 +27,8 @@ interface SliderInterface
     public const CONDITIONS_SERIALIZED = 'conditions_serialized';
     public const IS_AB_TEST = 'is_ab_test';
     public const AB_GOAL = 'ab_goal';
+    public const AB_WINNER = 'ab_winner';
+    public const AB_CONCLUDED_AT = 'ab_concluded_at';
     public const PRIORITY = 'priority';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
@@ -217,6 +219,28 @@ interface SliderInterface
      * @return $this
      */
     public function setAbGoal(string $goal): self;
+
+    /**
+     * @return string|null
+     */
+    public function getAbWinner(): ?string;
+
+    /**
+     * @param string|null $variant
+     * @return $this
+     */
+    public function setAbWinner(?string $variant): self;
+
+    /**
+     * @return string|null
+     */
+    public function getAbConcludedAt(): ?string;
+
+    /**
+     * @param string|null $concludedAt
+     * @return $this
+     */
+    public function setAbConcludedAt(?string $concludedAt): self;
 
     /**
      * @return int

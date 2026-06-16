@@ -44,6 +44,10 @@
                 comment="A/B test enabled for this slider"/>
         <column xsi:type="varchar" name="ab_goal" nullable="false" length="32" default="ctr"
                 comment="A/B winning metric (ctr|add_to_cart|revenue)"/>
+        <column xsi:type="varchar" name="ab_winner" nullable="true" length="32"
+                comment="Concluded winning variant label (null while running)"/>
+        <column xsi:type="timestamp" name="ab_concluded_at" on_update="false" nullable="true"
+                comment="When the A/B test was concluded"/>
 
         <column xsi:type="int" name="priority" padding="10" unsigned="true" nullable="false" default="0"
                 comment="Priority when multiple sliders match a slot"/>

@@ -64,6 +64,21 @@
                     <comment>Days a banner click is credited with a later add-to-cart / order.</comment>
                     <validate>validate-digits</validate>
                 </field>
+                <field id="ab_auto_conclude" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Auto-Conclude A/B Tests</label>
+                    <comment>When on, the daily cron picks a winner once enough data is collected and stops splitting traffic.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="ab_min_impressions" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>A/B Minimum Impressions per Variant</label>
+                    <comment>Each variant must reach this many impressions before a winner can be auto-declared.</comment>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="ab_auto_conclude">1</field>
+                    </depends>
+                </field>
             </group>
         </section>
     </system>

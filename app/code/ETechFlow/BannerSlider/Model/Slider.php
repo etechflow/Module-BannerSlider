@@ -181,6 +181,28 @@ class Slider extends AbstractModel implements SliderInterface
         return $this->setData(self::AB_GOAL, $goal);
     }
 
+    public function getAbWinner(): ?string
+    {
+        $value = $this->getData(self::AB_WINNER);
+        return $value === null || $value === '' ? null : (string)$value;
+    }
+
+    public function setAbWinner(?string $variant): SliderInterface
+    {
+        return $this->setData(self::AB_WINNER, $variant);
+    }
+
+    public function getAbConcludedAt(): ?string
+    {
+        $value = $this->getData(self::AB_CONCLUDED_AT);
+        return $value === null ? null : (string)$value;
+    }
+
+    public function setAbConcludedAt(?string $concludedAt): SliderInterface
+    {
+        return $this->setData(self::AB_CONCLUDED_AT, $concludedAt);
+    }
+
     public function getPriority(): int
     {
         return (int)$this->getData(self::PRIORITY);

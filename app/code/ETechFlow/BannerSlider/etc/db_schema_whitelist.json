@@ -18,6 +18,8 @@
             "conditions_serialized": true,
             "is_ab_test": true,
             "ab_goal": true,
+            "ab_winner": true,
+            "ab_concluded_at": true,
             "priority": true,
             "created_at": true,
             "updated_at": true

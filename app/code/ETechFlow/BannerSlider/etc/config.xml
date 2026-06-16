@@ -16,6 +16,8 @@
             </targeting>
             <analytics>
                 <attribution_window>7</attribution_window>
+                <ab_auto_conclude>0</ab_auto_conclude>
+                <ab_min_impressions>1000</ab_min_impressions>
             </analytics>
         </etechflow_bannerslider>
     </default>

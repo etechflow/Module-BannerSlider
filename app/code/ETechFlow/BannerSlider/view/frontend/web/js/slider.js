@@ -9,11 +9,23 @@
  */
 define([
     'Magento_Customer/js/customer-data',
-    'ETechFlow_BannerSlider/js/targeting'
-], function (customerData, targeting) {
+    'ETechFlow_BannerSlider/js/targeting',
+    'ETechFlow_BannerSlider/js/tracker'
+], function (customerData, targeting, tracker) {
     'use strict';
 
     var TARGETING_SECTION = 'etechflow-bannerslider';
+
+    function readCookie(name) {
+        var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+        return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    function writeCookie(name, value, days) {
+        var expires = new Date(new Date().getTime() + days * 86400000).toUTCString();
+        document.cookie = name + '=' + encodeURIComponent(value) +
+            '; expires=' + expires + '; path=/; SameSite=Lax';
+    }
 
     function Slider(element, config) {
         this.root = element;
@@ -41,6 +53,12 @@ define([
     Slider.prototype.init = function () {
         var self = this;
 
+        this.tracking = !!this.config.track;
+        if (this.tracking) {
+            tracker.init(this.config);
+            this.bindTracking();
+        }
+
         this.lazyLoadAround(0);
         this.bindControls();
         this.bindAutoplay();
@@ -48,7 +66,11 @@ define([
         this.initVideos();
         this.initCountdowns();
 
-        // Targeting decides which slides survive; only then activate media.
+        // A/B split first (synchronous, cookie-sticky), then per-visitor
+        // targeting (async). Whichever runs last leaves a valid active slide.
+        if (this.config.abTest) {
+            this.applyAbTest();
+        }
         if (this.hasTargeting()) {
             this.applyTargeting();
         } else {
@@ -189,20 +211,59 @@ define([
             entries.forEach(function (entry) {
                 if (entry.isIntersecting && !entry.target.dataset.etfSeen) {
                     entry.target.dataset.etfSeen = '1';
-                    // Phase 7 wires this hook to the tracking beacon.
-                    self.root.dispatchEvent(new CustomEvent('etf:impression', {
-                        detail: {
-                            sliderId: self.config.sliderId,
-                            bannerId: entry.target.getAttribute('data-banner-id'),
-                            variant: entry.target.getAttribute('data-variant')
-                        }
-                    }));
+                    var detail = {
+                        sliderId: self.config.sliderId,
+                        bannerId: entry.target.getAttribute('data-banner-id'),
+                        variant: entry.target.getAttribute('data-variant')
+                    };
+                    self.root.dispatchEvent(new CustomEvent('etf:impression', { detail: detail }));
+                    if (self.tracking) {
+                        tracker.push({
+                            type: 'impression',
+                            sliderId: detail.sliderId,
+                            bannerId: detail.bannerId,
+                            variant: detail.variant
+                        });
+                    }
                 }
             });
         }, { threshold: 0.5 });
 
         this.slides.forEach(function (slide) {
             observer.observe(slide);
+        });
+    };
+
+    /** Record click / add-to-cart events and set last-click attribution. */
+    Slider.prototype.bindTracking = function () {
+        var self = this;
+        this.slides.forEach(function (slide) {
+            var meta = {
+                sliderId: self.config.sliderId,
+                bannerId: slide.getAttribute('data-banner-id'),
+                variant: slide.getAttribute('data-variant')
+            };
+
+            function onClick(type) {
+                return function () {
+                    tracker.push({ type: type, sliderId: meta.sliderId, bannerId: meta.bannerId, variant: meta.variant });
+                    tracker.attribute(meta);
+                };
+            }
+
+            // Link banners (image / html / countdown) and product CTAs.
+            var clickTargets = slide.querySelectorAll(
+                '[data-etf-track="click"], .etf-bannerslider__product-media,' +
+                ' .etf-bannerslider__product-name, .etf-bannerslider__view'
+            );
+            Array.prototype.forEach.call(clickTargets, function (el) {
+                el.addEventListener('click', onClick('click'));
+            });
+
+            var cart = slide.querySelector('.etf-bannerslider__tocart');
+            if (cart) {
+                cart.addEventListener('click', onClick('add_to_cart'));
+            }
         });
     };
 
@@ -491,7 +552,15 @@ define([
             self.removeSlide(slide);
         });
 
-        // Re-establish a valid active slide from what remains.
+        this.resetActive();
+        if (this.count > 0) {
+            this.activateVideo(0);
+        }
+        this.restartAutoplay();
+    };
+
+    /** Clear all active states and promote the first remaining slide. */
+    Slider.prototype.resetActive = function () {
         this.slides.forEach(function (slide) {
             slide.classList.remove('is-active');
         });
@@ -505,9 +574,56 @@ define([
                 this.bullets[0].classList.add('is-active');
             }
             this.lazyLoadAround(0);
-            this.activateVideo(0);
         }
+    };
+
+    // ---------------------------------------------------------------------
+    //  A/B testing (Feature 3) — weighted split, sticky per visitor
+    // ---------------------------------------------------------------------
+
+    Slider.prototype.applyAbTest = function () {
+        var variants = this.config.abVariants || {};
+        var keys = Object.keys(variants);
+        if (keys.length < 2) {
+            return;
+        }
+        var chosen = this.resolveVariant(keys, variants);
+        var self = this;
+        var toRemove = [];
+        this.slides.forEach(function (slide) {
+            if (slide.getAttribute('data-variant') !== chosen) {
+                toRemove.push(slide);
+            }
+        });
+        toRemove.forEach(function (slide) {
+            self.removeSlide(slide);
+        });
+        this.resetActive();
         this.restartAutoplay();
+    };
+
+    /** Sticky weighted variant choice, remembered in a per-slider cookie. */
+    Slider.prototype.resolveVariant = function (keys, weights) {
+        var cookie = 'etf_bs_ab_' + this.config.sliderId;
+        var stored = readCookie(cookie);
+        if (stored && keys.indexOf(stored) !== -1) {
+            return stored;
+        }
+        var total = 0;
+        keys.forEach(function (k) {
+            total += Math.max(1, parseInt(weights[k], 10) || 1);
+        });
+        var r = Math.random() * total;
+        var chosen = keys[0];
+        for (var i = 0; i < keys.length; i++) {
+            r -= Math.max(1, parseInt(weights[keys[i]], 10) || 1);
+            if (r <= 0) {
+                chosen = keys[i];
+                break;
+            }
+        }
+        writeCookie(cookie, chosen, 30);
+        return chosen;
     };
 
     /** Fail-open / match path: show any slides still waiting on targeting. */
