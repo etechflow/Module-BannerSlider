@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ETechFlow\BannerSliderGraphQl\Model\Resolver;
 
+use ETechFlow\BannerSlider\Model\Config;
 use ETechFlow\BannerSlider\Model\Stat\StatRecorder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\GraphQl\Config\Element\Field;
@@ -24,7 +25,8 @@ class TrackBannerEvent implements ResolverInterface
 
     public function __construct(
         private readonly StatRecorder $statRecorder,
-        private readonly ScopeConfigInterface $scopeConfig
+        private readonly ScopeConfigInterface $scopeConfig,
+        private readonly Config $config
     ) {
     }
 
@@ -50,7 +52,7 @@ class TrackBannerEvent implements ResolverInterface
         $store = $context->getExtensionAttributes()->getStore();
         $storeId = $store instanceof StoreInterface ? (int)$store->getId() : 0;
 
-        $enabled = $this->scopeConfig->isSetFlag(self::XML_ENABLED, ScopeInterface::SCOPE_STORE, $storeId)
+        $enabled = $this->config->isEnabled()
             && $this->scopeConfig->isSetFlag(self::XML_TRACKING, ScopeInterface::SCOPE_STORE, $storeId);
         if (!$enabled) {
             return ['success' => false];

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ETechFlow\BannerSlider\Observer;
 
+use ETechFlow\BannerSlider\Model\Config;
 use ETechFlow\BannerSlider\Model\Stat\StatRecorder;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Event\Observer;
@@ -23,7 +24,6 @@ use Magento\Store\Model\ScopeInterface;
 class AttributeOrderRevenue implements ObserverInterface
 {
     private const ATTR_COOKIE = 'etf_bs_attr';
-    private const XML_ENABLED = 'etechflow_bannerslider/general/enabled';
     private const XML_TRACKING = 'etechflow_bannerslider/performance/async_tracking';
 
     public function __construct(
@@ -31,6 +31,7 @@ class AttributeOrderRevenue implements ObserverInterface
         private readonly CookieMetadataFactory $cookieMetadataFactory,
         private readonly StatRecorder $statRecorder,
         private readonly ScopeConfigInterface $scopeConfig,
+        private readonly Config $config,
         private readonly Json $json
     ) {
     }
@@ -103,7 +104,7 @@ class AttributeOrderRevenue implements ObserverInterface
 
     private function isTrackingEnabled(): bool
     {
-        return $this->scopeConfig->isSetFlag(self::XML_ENABLED, ScopeInterface::SCOPE_STORE)
+        return $this->config->isEnabled()
             && $this->scopeConfig->isSetFlag(self::XML_TRACKING, ScopeInterface::SCOPE_STORE);
     }
 }

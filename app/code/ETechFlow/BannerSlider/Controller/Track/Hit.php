@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ETechFlow\BannerSlider\Controller\Track;
 
+use ETechFlow\BannerSlider\Model\Config;
 use ETechFlow\BannerSlider\Model\Stat\StatRecorder;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
@@ -30,7 +31,6 @@ use Magento\Store\Model\StoreManagerInterface;
 class Hit implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     private const MAX_EVENTS = 50;
-    private const XML_ENABLED = 'etechflow_bannerslider/general/enabled';
     private const XML_TRACKING = 'etechflow_bannerslider/performance/async_tracking';
 
     public function __construct(
@@ -39,6 +39,7 @@ class Hit implements HttpPostActionInterface, CsrfAwareActionInterface
         private readonly StatRecorder $statRecorder,
         private readonly StoreManagerInterface $storeManager,
         private readonly ScopeConfigInterface $scopeConfig,
+        private readonly Config $config,
         private readonly Json $json
     ) {
     }
@@ -92,7 +93,8 @@ class Hit implements HttpPostActionInterface, CsrfAwareActionInterface
 
     private function isTrackingEnabled(): bool
     {
-        return $this->scopeConfig->isSetFlag(self::XML_ENABLED, ScopeInterface::SCOPE_STORE)
+        // config->isEnabled() includes the license gate.
+        return $this->config->isEnabled()
             && $this->scopeConfig->isSetFlag(self::XML_TRACKING, ScopeInterface::SCOPE_STORE);
     }
 

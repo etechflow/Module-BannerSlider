@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!--
+        License gate for the module's own admin route only. Fires exclusively for
+        etechflow_bannerslider/* controllers (Sliders, Banners, Statistics, image
+        upload), so no other admin page is touched. The observer skips the license
+        controllers to avoid a redirect loop.
+    -->
+    <event name="controller_action_predispatch_etechflow_bannerslider">
+        <observer name="etechflow_bannerslider_admin_gate"
+                  instance="ETechFlow\BannerSlider\Observer\AdminGate"/>
+    </event>
+</config>

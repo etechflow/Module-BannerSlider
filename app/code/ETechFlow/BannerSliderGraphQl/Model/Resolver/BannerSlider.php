@@ -5,6 +5,7 @@ namespace ETechFlow\BannerSliderGraphQl\Model\Resolver;
 
 use ETechFlow\BannerSlider\Api\SliderRepositoryInterface;
 use ETechFlow\BannerSlider\Model\Banner;
+use ETechFlow\BannerSlider\Model\Config;
 use ETechFlow\BannerSlider\Model\Storefront\BannerProvider;
 use ETechFlow\BannerSlider\Model\Targeting\TargetingRules;
 use Magento\Catalog\Api\ProductRepositoryInterface;
@@ -43,6 +44,7 @@ class BannerSlider implements ResolverInterface
         private readonly TimezoneInterface $timezone,
         private readonly ProductRepositoryInterface $productRepository,
         private readonly ScopeConfigInterface $scopeConfig,
+        private readonly Config $config,
         private readonly Json $json
     ) {
     }
@@ -60,7 +62,8 @@ class BannerSlider implements ResolverInterface
         $store = $context->getExtensionAttributes()->getStore();
         $storeId = $store instanceof StoreInterface ? (int)$store->getId() : 0;
 
-        if (!$this->scopeConfig->isSetFlag(self::XML_ENABLED, ScopeInterface::SCOPE_STORE, $storeId)) {
+        // Gated on a valid license + admin toggle (Model\Config).
+        if (!$this->config->isEnabled()) {
             return null;
         }
 

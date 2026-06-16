@@ -5,6 +5,7 @@ namespace ETechFlow\BannerSlider\Block;
 
 use ETechFlow\BannerSlider\Api\SliderRepositoryInterface;
 use ETechFlow\BannerSlider\Model\Banner;
+use ETechFlow\BannerSlider\Model\Config;
 use ETechFlow\BannerSlider\Model\Slider as SliderModel;
 use ETechFlow\BannerSlider\Model\Storefront\BannerProvider;
 use ETechFlow\BannerSlider\Model\Storefront\ProductBannerResolver;
@@ -34,6 +35,7 @@ class Slider extends Template
         private readonly ProductBannerResolver $productBannerResolver,
         private readonly TimezoneInterface $timezone,
         private readonly TargetingRules $targetingRules,
+        private readonly Config $config,
         private readonly Json $json,
         array $data = []
     ) {
@@ -42,10 +44,8 @@ class Slider extends Template
 
     public function isModuleEnabled(): bool
     {
-        return $this->_scopeConfig->isSetFlag(
-            self::CONFIG_ENABLED,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
+        // Gated on a valid license + the admin enable toggle (see Model\Config).
+        return $this->config->isEnabled();
     }
 
     /**
