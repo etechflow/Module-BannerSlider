@@ -261,7 +261,7 @@
                         </additionalClasses>
                     </settings>
                 </field>
-                <field name="banner_id" formElement="select" component="Magento_Ui/js/form/element/ui-select">
+                <field name="banner_id" formElement="select">
                     <settings>
                         <dataType>number</dataType>
                         <label translate="true">Banner</label>

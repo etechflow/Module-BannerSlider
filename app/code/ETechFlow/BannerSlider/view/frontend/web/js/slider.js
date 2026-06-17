@@ -43,6 +43,7 @@ define([
         this.countdowns = [];
         this.failTimer = null;
         this.targetingApplied = false;
+        this.sectionApplied = false;
         this.count = this.slides.length;
 
         if (this.count > 0) {
@@ -99,6 +100,10 @@ define([
         if (index === this.current) {
             return;
         }
+
+        // Leaving the slide: any playing video is torn down below, so allow
+        // autoplay to resume once the user has navigated away.
+        this.videoPlaying = false;
 
         this.deactivateVideo(this.current);
         this.slides[this.current].classList.remove('is-active');
@@ -170,7 +175,7 @@ define([
 
     Slider.prototype.bindAutoplay = function () {
         var self = this;
-        if (!this.config.autoplay || this.count < 2) {
+        if (!this.config.autoplay || this.count < 2 || this.videoPlaying) {
             return;
         }
         var speed = parseInt(this.config.autoplaySpeed, 10) || 3500;
@@ -304,6 +309,12 @@ define([
         }
         if (forceAutoplay && embed.indexOf('autoplay=') === -1) {
             embed += (embed.indexOf('?') === -1 ? '?' : '&') + 'autoplay=1';
+        }
+        if (forceAutoplay) {
+            // Keep the carousel on this slide while the video is playing — the
+            // flag also stops pauseOnHover/mouseleave from re-arming autoplay.
+            this.videoPlaying = true;
+            this.stop();
         }
         var iframe = document.createElement('iframe');
         iframe.src = embed;
@@ -492,43 +503,14 @@ define([
 
     Slider.prototype.applyTargeting = function () {
         var self = this;
+        // device / UTM / time are derived locally — no request needed.
+        var ctx = targeting.buildContext(null);
 
-        // Fail open: if visitor context never arrives, reveal everything so a
-        // targeted banner is never stuck hidden by a stalled request.
-        this.failTimer = window.setTimeout(function () {
-            if (!self.targetingApplied) {
-                self.targetingApplied = true;
-                self.revealPending();
-            }
-        }, 1500);
-
-        if (!customerData || typeof customerData.get !== 'function') {
-            return;
-        }
-        var section = customerData.get(TARGETING_SECTION);
-        var current = section();
-        if (current && typeof current.group_id !== 'undefined') {
-            this.runTargeting(current);
-        }
-        section.subscribe(function (data) {
-            if (!self.targetingApplied && data && typeof data.group_id !== 'undefined') {
-                self.runTargeting(data);
-            }
-        });
-    };
-
-    Slider.prototype.runTargeting = function (section) {
-        if (this.targetingApplied) {
-            return;
-        }
-        this.targetingApplied = true;
-        if (this.failTimer) {
-            window.clearTimeout(this.failTimer);
-            this.failTimer = null;
-        }
-
-        var ctx = targeting.buildContext(section);
-        var toRemove = [];
+        // Phase 1 (immediate): apply LOCAL rules (device / day / hour / UTM).
+        // These need no network, so device targeting is correct instantly — even
+        // on slow mobile where the customer-data section can arrive late.
+        var deferred = [];
+        var dropNow = [];
         this.slides.forEach(function (slide) {
             var raw = slide.getAttribute('data-etf-target');
             if (!raw) {
@@ -540,14 +522,77 @@ define([
             } catch (e) {
                 rules = null;
             }
-            if (targeting.matches(rules, ctx)) {
-                slide.classList.remove('is-pending-target');
+            if (!targeting.matchesLocal(rules, ctx)) {
+                dropNow.push(slide);          // can never match this visitor
+            } else if (targeting.needsSection(rules)) {
+                slide._etfRules = rules;      // still needs group/login/cart/country
+                deferred.push(slide);
             } else {
-                toRemove.push(slide);
+                slide.classList.remove('is-pending-target');
             }
         });
+        dropNow.forEach(function (slide) {
+            self.removeSlide(slide);
+        });
+        this.resetActive();
+        if (this.count > 0) {
+            this.activateVideo(0);
+        }
+        this.restartAutoplay();
+
+        if (!deferred.length) {
+            this.targetingApplied = true;
+            return;
+        }
+
+        // Phase 2: dimensions that need customer-data. If the section is slow,
+        // reveal the deferred banners so they are never stuck hidden — but keep
+        // listening, so a late section can still prune the ones that don't match.
+        this.failTimer = window.setTimeout(function () {
+            self.revealDeferred(deferred);
+        }, 3000);
+
+        if (!customerData || typeof customerData.get !== 'function') {
+            return;
+        }
+        var section = customerData.get(TARGETING_SECTION);
+        section.subscribe(function (data) {
+            if (!self.sectionApplied && data && typeof data.group_id !== 'undefined') {
+                self.applySection(deferred, data);
+            }
+        });
+        var current = section();
+        if (current && typeof current.group_id !== 'undefined') {
+            this.applySection(deferred, current);
+        } else if (typeof customerData.reload === 'function') {
+            // The section isn't in local storage yet (e.g. a browser that cached
+            // sections before this module was installed). Force a fetch so the
+            // subscribe above fires with real login/group/country data.
+            customerData.reload([TARGETING_SECTION], false);
+        }
+    };
+
+    Slider.prototype.applySection = function (deferred, section) {
+        if (this.sectionApplied || !section) {
+            return;
+        }
+        this.sectionApplied = true;
+        this.targetingApplied = true;
+        if (this.failTimer) {
+            window.clearTimeout(this.failTimer);
+            this.failTimer = null;
+        }
 
         var self = this;
+        var toRemove = [];
+        var ctx = targeting.buildContext(section);
+        deferred.forEach(function (slide) {
+            if (targeting.matches(slide._etfRules, ctx)) {
+                slide.classList.remove('is-pending-target'); // may already be visible
+            } else {
+                toRemove.push(slide);                         // prune (even if fail-open revealed it)
+            }
+        });
         toRemove.forEach(function (slide) {
             self.removeSlide(slide);
         });
@@ -559,6 +604,29 @@ define([
         this.restartAutoplay();
     };
 
+    /**
+     * Fail-open for section-dependent banners: reveal them so they are not stuck
+     * hidden when customer-data is slow. We do NOT mark targeting as applied, so a
+     * late-arriving section can still prune the ones that do not match.
+     */
+    Slider.prototype.revealDeferred = function (deferred) {
+        var changed = false;
+        deferred.forEach(function (slide) {
+            if (slide.classList.contains('is-pending-target')) {
+                slide.classList.remove('is-pending-target');
+                changed = true;
+            }
+        });
+        this.failTimer = null;
+        if (changed) {
+            this.resetActive();
+            if (this.count > 0) {
+                this.activateVideo(0);
+            }
+            this.restartAutoplay();
+        }
+    };
+
     /** Clear all active states and promote the first remaining slide. */
     Slider.prototype.resetActive = function () {
         this.slides.forEach(function (slide) {
@@ -567,13 +635,22 @@ define([
         this.bullets.forEach(function (bullet) {
             bullet.classList.remove('is-active');
         });
-        this.current = 0;
-        if (this.count > 0) {
-            this.slides[0].classList.add('is-active');
-            if (this.bullets[0]) {
-                this.bullets[0].classList.add('is-active');
+        // Promote the first slide that is not still pending a targeting decision,
+        // so a deferred (hidden) banner is never shown as a blank active slide.
+        var first = 0;
+        for (var i = 0; i < this.slides.length; i++) {
+            if (!this.slides[i].classList.contains('is-pending-target')) {
+                first = i;
+                break;
             }
-            this.lazyLoadAround(0);
+        }
+        this.current = first;
+        if (this.count > 0) {
+            this.slides[first].classList.add('is-active');
+            if (this.bullets[first]) {
+                this.bullets[first].classList.add('is-active');
+            }
+            this.lazyLoadAround(first);
         }
     };
 

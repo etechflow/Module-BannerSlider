@@ -79,54 +79,84 @@
                 <switcherConfig>
                     <enabled>true</enabled>
                     <rules>
-                        <rule name="image">
+                        <rule name="0">
                             <value>image</value>
                             <actions>
-                                <action name="show_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>show</callback></action>
-                                <action name="hide_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>hide</callback></action>
-                                <action name="hide_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>hide</callback></action>
-                                <action name="hide_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>hide</callback></action>
-                                <action name="hide_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>hide</callback></action>
+                                <action name="0"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image</target><callback>show</callback></action>
+                                <action name="1"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image_mobile</target><callback>show</callback></action>
+                                <action name="2"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.alt_text</target><callback>show</callback></action>
+                                <action name="3"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_type</target><callback>hide</callback></action>
+                                <action name="4"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_url</target><callback>hide</callback></action>
+                                <action name="5"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_autoplay</target><callback>hide</callback></action>
+                                <action name="6"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_muted</target><callback>hide</callback></action>
+                                <action name="7"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.content</target><callback>hide</callback></action>
+                                <action name="8"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.product_id</target><callback>hide</callback></action>
+                                <action name="9"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_to</target><callback>hide</callback></action>
+                                <action name="10"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_hide_expired</target><callback>hide</callback></action>
                             </actions>
                         </rule>
-                        <rule name="video">
+                        <rule name="1">
                             <value>video</value>
                             <actions>
-                                <action name="hide_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>hide</callback></action>
-                                <action name="show_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>show</callback></action>
-                                <action name="hide_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>hide</callback></action>
-                                <action name="hide_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>hide</callback></action>
-                                <action name="hide_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>hide</callback></action>
+                                <action name="0"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image</target><callback>hide</callback></action>
+                                <action name="1"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image_mobile</target><callback>hide</callback></action>
+                                <action name="2"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.alt_text</target><callback>hide</callback></action>
+                                <action name="3"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_type</target><callback>show</callback></action>
+                                <action name="4"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_url</target><callback>show</callback></action>
+                                <action name="5"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_autoplay</target><callback>show</callback></action>
+                                <action name="6"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_muted</target><callback>show</callback></action>
+                                <action name="7"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.content</target><callback>hide</callback></action>
+                                <action name="8"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.product_id</target><callback>hide</callback></action>
+                                <action name="9"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_to</target><callback>hide</callback></action>
+                                <action name="10"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_hide_expired</target><callback>hide</callback></action>
                             </actions>
                         </rule>
-                        <rule name="html">
+                        <rule name="2">
                             <value>html</value>
                             <actions>
-                                <action name="hide_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>hide</callback></action>
-                                <action name="hide_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>hide</callback></action>
-                                <action name="show_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>show</callback></action>
-                                <action name="hide_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>hide</callback></action>
-                                <action name="hide_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>hide</callback></action>
+                                <action name="0"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image</target><callback>hide</callback></action>
+                                <action name="1"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image_mobile</target><callback>hide</callback></action>
+                                <action name="2"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.alt_text</target><callback>hide</callback></action>
+                                <action name="3"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_type</target><callback>hide</callback></action>
+                                <action name="4"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_url</target><callback>hide</callback></action>
+                                <action name="5"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_autoplay</target><callback>hide</callback></action>
+                                <action name="6"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_muted</target><callback>hide</callback></action>
+                                <action name="7"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.content</target><callback>show</callback></action>
+                                <action name="8"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.product_id</target><callback>hide</callback></action>
+                                <action name="9"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_to</target><callback>hide</callback></action>
+                                <action name="10"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_hide_expired</target><callback>hide</callback></action>
                             </actions>
                         </rule>
-                        <rule name="product">
+                        <rule name="3">
                             <value>product</value>
                             <actions>
-                                <action name="hide_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>hide</callback></action>
-                                <action name="hide_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>hide</callback></action>
-                                <action name="hide_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>hide</callback></action>
-                                <action name="show_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>show</callback></action>
-                                <action name="hide_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>hide</callback></action>
+                                <action name="0"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image</target><callback>hide</callback></action>
+                                <action name="1"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image_mobile</target><callback>hide</callback></action>
+                                <action name="2"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.alt_text</target><callback>hide</callback></action>
+                                <action name="3"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_type</target><callback>hide</callback></action>
+                                <action name="4"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_url</target><callback>hide</callback></action>
+                                <action name="5"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_autoplay</target><callback>hide</callback></action>
+                                <action name="6"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_muted</target><callback>hide</callback></action>
+                                <action name="7"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.content</target><callback>hide</callback></action>
+                                <action name="8"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.product_id</target><callback>show</callback></action>
+                                <action name="9"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_to</target><callback>hide</callback></action>
+                                <action name="10"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_hide_expired</target><callback>hide</callback></action>
                             </actions>
                         </rule>
-                        <rule name="countdown">
+                        <rule name="4">
                             <value>countdown</value>
                             <actions>
-                                <action name="hide_image"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_image</target><callback>hide</callback></action>
-                                <action name="hide_video"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_video</target><callback>hide</callback></action>
-                                <action name="hide_html"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_html</target><callback>hide</callback></action>
-                                <action name="hide_product"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_product</target><callback>hide</callback></action>
-                                <action name="show_countdown"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.content_countdown</target><callback>show</callback></action>
+                                <action name="0"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image</target><callback>hide</callback></action>
+                                <action name="1"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.image_mobile</target><callback>hide</callback></action>
+                                <action name="2"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.alt_text</target><callback>hide</callback></action>
+                                <action name="3"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_type</target><callback>hide</callback></action>
+                                <action name="4"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_url</target><callback>hide</callback></action>
+                                <action name="5"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_autoplay</target><callback>hide</callback></action>
+                                <action name="6"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.video_muted</target><callback>hide</callback></action>
+                                <action name="7"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.content</target><callback>hide</callback></action>
+                                <action name="8"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.product_id</target><callback>hide</callback></action>
+                                <action name="9"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_to</target><callback>show</callback></action>
+                                <action name="10"><target>etechflow_bannerslider_banner_form.etechflow_bannerslider_banner_form.banner_content.countdown_hide_expired</target><callback>show</callback></action>
                             </actions>
                         </rule>
                     </rules>
@@ -173,11 +203,12 @@
         </field>
     </fieldset>
 
-    <!-- ===================== Type: Image ===================== -->
-    <fieldset name="content_image">
+    <!-- ===================== Type-specific content (fields switched by Banner Type) ===================== -->
+    <fieldset name="banner_content">
         <settings>
-            <label translate="true">Image Content</label>
+            <label translate="true">Banner Content</label>
         </settings>
+        <!-- Image -->
         <field name="image" formElement="imageUploader">
             <settings>
                 <label translate="true">Desktop Image</label>
@@ -219,18 +250,12 @@
                 <label translate="true">Alt Text</label>
             </settings>
         </field>
-    </fieldset>
-
-    <!-- ===================== Type: Video ===================== -->
-    <fieldset name="content_video">
-        <settings>
-            <label translate="true">Video Content</label>
-            <visible>false</visible>
-        </settings>
+        <!-- Video -->
         <field name="video_type" formElement="select">
             <settings>
                 <dataType>text</dataType>
                 <label translate="true">Video Provider</label>
+                <visible>false</visible>
             </settings>
             <formElements>
                 <select>
@@ -245,12 +270,14 @@
                 <dataType>text</dataType>
                 <label translate="true">Video URL / ID</label>
                 <notice translate="true">Full MP4 URL, or the YouTube/Vimeo video ID or URL.</notice>
+                <visible>false</visible>
             </settings>
         </field>
         <field name="video_autoplay" formElement="checkbox">
             <settings>
                 <dataType>number</dataType>
                 <label translate="true">Autoplay</label>
+                <visible>false</visible>
             </settings>
             <formElements>
                 <checkbox>
@@ -265,6 +292,7 @@
             <settings>
                 <dataType>number</dataType>
                 <label translate="true">Muted</label>
+                <visible>false</visible>
             </settings>
             <formElements>
                 <checkbox>
@@ -275,18 +303,12 @@
                 </checkbox>
             </formElements>
         </field>
-    </fieldset>
-
-    <!-- ===================== Type: HTML ===================== -->
-    <fieldset name="content_html">
-        <settings>
-            <label translate="true">HTML / Rich Content</label>
-            <visible>false</visible>
-        </settings>
+        <!-- HTML -->
         <field name="content" formElement="wysiwyg">
             <settings>
                 <label translate="true">Content</label>
                 <dataType>text</dataType>
+                <visible>false</visible>
             </settings>
             <formElements>
                 <wysiwyg>
@@ -297,36 +319,24 @@
                 </wysiwyg>
             </formElements>
         </field>
-    </fieldset>
-
-    <!-- ===================== Type: Product ===================== -->
-    <fieldset name="content_product">
-        <settings>
-            <label translate="true">Product</label>
-            <visible>false</visible>
-        </settings>
+        <!-- Product -->
         <field name="product_id" formElement="input">
             <settings>
                 <dataType>number</dataType>
                 <label translate="true">Product ID</label>
                 <notice translate="true">The product whose image, price and add-to-cart will render on the slide.</notice>
+                <visible>false</visible>
                 <validation>
                     <rule name="validate-digits" xsi:type="boolean">true</rule>
                 </validation>
             </settings>
         </field>
-    </fieldset>
-
-    <!-- ===================== Type: Countdown ===================== -->
-    <fieldset name="content_countdown">
-        <settings>
-            <label translate="true">Countdown Timer</label>
-            <visible>false</visible>
-        </settings>
+        <!-- Countdown -->
         <field name="countdown_to" formElement="date">
             <settings>
                 <dataType>text</dataType>
                 <label translate="true">Countdown To</label>
+                <visible>false</visible>
             </settings>
             <formElements>
                 <date>
@@ -343,6 +353,7 @@
             <settings>
                 <dataType>number</dataType>
                 <label translate="true">Hide When Expired</label>
+                <visible>false</visible>
             </settings>
             <formElements>
                 <checkbox>

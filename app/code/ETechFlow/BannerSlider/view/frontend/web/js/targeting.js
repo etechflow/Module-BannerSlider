@@ -182,8 +182,52 @@ define([], function () {
         return true;
     }
 
+    /**
+     * Subset of matches() covering only LOCALLY derived dimensions — device,
+     * day, hour and UTM. These need no customer-data request, so they can be
+     * evaluated immediately (important on slow connections where the section
+     * may arrive after the fail-open timeout).
+     */
+    function matchesLocal(rules, ctx) {
+        if (!rules) {
+            return true;
+        }
+        if (rules.devices && rules.devices.length && rules.devices.indexOf(ctx.device) === -1) {
+            return false;
+        }
+        if (rules.days && rules.days.length && rules.days.indexOf('' + ctx.now.getDay()) === -1) {
+            return false;
+        }
+        if (!hourMatches(rules.hour_from, rules.hour_to, ctx.now.getHours())) {
+            return false;
+        }
+        if (rules.utm) {
+            for (var i = 0; i < UTM_KEYS.length; i++) {
+                var key = UTM_KEYS[i];
+                if (rules.utm[key] && !eqi(rules.utm[key], ctx.utm[key] || '')) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /** True when a rule set depends on customer-data (group/login/cart/country). */
+    function needsSection(rules) {
+        if (!rules) {
+            return false;
+        }
+        return !!((rules.groups && rules.groups.length) ||
+            rules.login ||
+            (rules.countries && rules.countries.length) ||
+            typeof rules.cart_qty_min === 'number' || typeof rules.cart_qty_max === 'number' ||
+            typeof rules.cart_subtotal_min === 'number' || typeof rules.cart_subtotal_max === 'number');
+    }
+
     return {
         buildContext: buildContext,
-        matches: matches
+        matches: matches,
+        matchesLocal: matchesLocal,
+        needsSection: needsSection
     };
 });

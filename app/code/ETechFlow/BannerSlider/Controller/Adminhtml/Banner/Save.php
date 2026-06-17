@@ -118,8 +118,10 @@ class Save extends Action
             if (is_array($value)) {
                 if (!empty($value['tmp_name']) || !empty($value['name'])) {
                     $name = $value['name'] ?? null;
-                    if ($name && empty($value['url'])) {
-                        // Not yet persisted -> move from tmp to base path.
+                    if ($name) {
+                        // Move from tmp to base path. For a freshly uploaded file this
+                        // relocates it; for an already-persisted image it throws (not in
+                        // tmp) and is caught, leaving the existing file in place.
                         try {
                             $this->imageUploader->moveFileFromTmp($name);
                         } catch (\Exception $e) {
