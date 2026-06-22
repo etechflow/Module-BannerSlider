@@ -4,6 +4,9 @@
     <update handle="styles"/>
     <body>
         <referenceContainer name="content">
+            <block class="ETechFlow\BannerSlider\Block\Adminhtml\UpdateNotice"
+                   name="etechflow_bannerslider_update_notice_banner"
+                   template="ETechFlow_BannerSlider::update-notice.phtml"/>
             <uiComponent name="etechflow_bannerslider_banner_listing"/>
         </referenceContainer>
     </body>

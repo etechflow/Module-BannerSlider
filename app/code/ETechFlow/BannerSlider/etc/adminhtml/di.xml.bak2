@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Grid data sources are registered in the GLOBAL etc/di.xml. An
+         area-scoped collections array REPLACES the global grid registry on
+         this install and breaks every other module's admin grid. Keep empty. -->
+</config>

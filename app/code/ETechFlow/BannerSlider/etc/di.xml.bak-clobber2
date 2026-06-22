@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Data interfaces -> entity models -->
+    <preference for="ETechFlow\BannerSlider\Api\Data\SliderInterface"
+                type="ETechFlow\BannerSlider\Model\Slider"/>
+    <preference for="ETechFlow\BannerSlider\Api\Data\BannerInterface"
+                type="ETechFlow\BannerSlider\Model\Banner"/>
+
+    <!-- Repository interfaces -> repositories -->
+    <preference for="ETechFlow\BannerSlider\Api\SliderRepositoryInterface"
+                type="ETechFlow\BannerSlider\Model\SliderRepository"/>
+    <preference for="ETechFlow\BannerSlider\Api\BannerRepositoryInterface"
+                type="ETechFlow\BannerSlider\Model\BannerRepository"/>
+
+    <!-- Search results -->
+    <preference for="ETechFlow\BannerSlider\Api\Data\SliderSearchResultsInterface"
+                type="Magento\Framework\Api\SearchResults"/>
+    <preference for="ETechFlow\BannerSlider\Api\Data\BannerSearchResultsInterface"
+                type="Magento\Framework\Api\SearchResults"/>
+
+    <!-- ============================================================ -->
+    <!-- Admin grid (UI listing) collections                          -->
+    <!-- ============================================================ -->
+    <virtualType name="ETechFlow\BannerSlider\Model\ResourceModel\Slider\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">etechflow_bannerslider_slider</argument>
+            <argument name="resourceModel" xsi:type="string">ETechFlow\BannerSlider\Model\ResourceModel\Slider</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="ETechFlow\BannerSlider\Model\ResourceModel\Banner\Grid\Collection"
+                 type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">etechflow_bannerslider_banner</argument>
+            <argument name="resourceModel" xsi:type="string">ETechFlow\BannerSlider\Model\ResourceModel\Banner</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Admin-grid data sources registered GLOBALLY (NEVER in an area scope,
+         which would replace the whole global grid registry in that area). -->
+    <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
+        <arguments>
+            <argument name="collections" xsi:type="array">
+                <item name="etechflow_bannerslider_slider_listing_data_source" xsi:type="string">ETechFlow\BannerSlider\Model\ResourceModel\Slider\Grid\Collection</item>
+                <item name="etechflow_bannerslider_banner_listing_data_source" xsi:type="string">ETechFlow\BannerSlider\Model\ResourceModel\Banner\Grid\Collection</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- ============================================================ -->
+    <!-- Banner image uploader (tmp + permanent media paths)          -->
+    <!-- ============================================================ -->
+    <virtualType name="ETechFlow\BannerSlider\BannerImageUploader" type="Magento\Catalog\Model\ImageUploader">
+        <arguments>
+            <argument name="baseTmpPath" xsi:type="string">etechflow/bannerslider/tmp</argument>
+            <argument name="basePath" xsi:type="string">etechflow/bannerslider</argument>
+            <argument name="allowedExtensions" xsi:type="array">
+                <item name="jpg" xsi:type="string">jpg</item>
+                <item name="jpeg" xsi:type="string">jpeg</item>
+                <item name="gif" xsi:type="string">gif</item>
+                <item name="png" xsi:type="string">png</item>
+                <item name="webp" xsi:type="string">webp</item>
+            </argument>
+            <argument name="allowedMimeTypes" xsi:type="array">
+                <item name="jpg" xsi:type="string">image/jpg</item>
+                <item name="jpeg" xsi:type="string">image/jpeg</item>
+                <item name="gif" xsi:type="string">image/gif</item>
+                <item name="png" xsi:type="string">image/png</item>
+                <item name="webp" xsi:type="string">image/webp</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="ETechFlow\BannerSlider\Controller\Adminhtml\Banner\Upload">
+        <arguments>
+            <argument name="imageUploader" xsi:type="object">ETechFlow\BannerSlider\BannerImageUploader</argument>
+        </arguments>
+    </type>
+    <type name="ETechFlow\BannerSlider\Controller\Adminhtml\Banner\Save">
+        <arguments>
+            <argument name="imageUploader" xsi:type="object">ETechFlow\BannerSlider\BannerImageUploader</argument>
+        </arguments>
+    </type>
+
+</config>

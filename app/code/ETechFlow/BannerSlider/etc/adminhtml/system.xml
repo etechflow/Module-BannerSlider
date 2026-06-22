@@ -17,7 +17,7 @@
                 <field id="license_key" translate="label comment" type="text" sortOrder="10"
                        showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>License Key</label>
-                    <comment><![CDATA[Paste your eTechFlow SP-XXXX subscription key (from the licensing portal) OR a per-module HMAC key. Leave blank if using a Bundle License Key.]]></comment>
+                    <comment><![CDATA[Paste your eTechFlow SP-XXXX subscription key. Buy a licence at https://module.etechflow.com/en-gb/modules/banner-slider, then paste the SP-XXXX key shown on the confirmation page. (A per-module HMAC key also works; leave blank if using a Bundle License Key.)]]></comment>
                 </field>
                 <field id="issued_key" translate="label comment" type="obscure" sortOrder="20"
                        showInDefault="1" showInWebsite="0" showInStore="0">

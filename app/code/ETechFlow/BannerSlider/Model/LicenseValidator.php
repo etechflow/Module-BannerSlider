@@ -14,21 +14,23 @@ use Magento\Store\Model\StoreManagerInterface;
 /**
  * License validation for ETechFlow_BannerSlider.
  *
- * Hybrid model — follows LICENSING_PROTOCOL.md + PORTAL_LICENSING_GUIDE.md:
- *   - SP-XXXX keys  -> portal validation (domain + server IP must match).
+ * Follows LICENSING_IMPLEMENTATION_GUIDE.md (reference: ETechFlow_ImageOptimizer):
+ *   - SP-XXXX keys  -> live portal validation against license-service.etechflow.com
+ *                      (domain + server IP must match; result cached briefly).
  *   - HMAC keys     -> local HMAC-SHA256 per-module key OR shared bundle key.
  *   - Common dev hostnames auto-detect and bypass.
+ *
+ * Keys are obtained by buying a licence on module.etechflow.com (the webstore)
+ * and pasting the SP-XXXX key into the License config field — there is no
+ * in-admin checkout. Suspension, expiry and server-IP binding are enforced and
+ * reset portal-side (module.etechflow.com admin), so a revoked key disables the
+ * module within the cache window without any module-side key rewriting.
  *
  * IMPORTANT (protocol): MODULE_ID + SECRET_FRAGMENTS are unique to this
  * module; BUNDLE_ID + BUNDLE_SECRET_FRAGMENTS + XML_PATH_BUNDLE_LICENSE_KEY
  * are byte-identical across EVERY eTechFlow module so a single bundle key
  * activates all of them. Do not change the bundle constants here without
  * changing them everywhere.
- *
- * IP-block auto-management (portal keys only):
- *   portal returns ip_blocked:true -> clearLicenseKey() + ip_blocked flag = 1.
- *   IP restored -> portal returns valid -> writeLicenseKey() restores from
- *   issued_key + resets ip_blocked = 0.
  */
 class LicenseValidator
 {
@@ -88,9 +90,6 @@ class LicenseValidator
         $host = $this->getCurrentHost();
         if ($host === '') {
             return false;
-        }
-        if ($this->isDevelopmentHost($host)) {
-            return true;
         }
         return $this->checkKey($host);
     }

@@ -2,13 +2,21 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <!--
-        License gate for the module's own admin route only. Fires exclusively for
-        etechflow_bannerslider/* controllers (Sliders, Banners, Statistics, image
-        upload), so no other admin page is touched. The observer skips the license
-        controllers to avoid a redirect loop.
+        Surface an admin bell-icon (AdminNotification inbox) notification when a
+        newer version of this module is published to the eTechFlow private
+        Composer repo. Fires on any Banner Slider admin page (route-level
+        predispatch). Deduped per version + fail-safe (never blocks the page).
     -->
     <event name="controller_action_predispatch_etechflow_bannerslider">
+        <!-- Gate the module's admin screens behind a valid licence (shows the
+             suspension card when suspended/expired/IP-blocked/missing). -->
         <observer name="etechflow_bannerslider_admin_gate"
                   instance="ETechFlow\BannerSlider\Observer\AdminGate"/>
+        <observer name="etechflow_bannerslider_update_notification"
+                  instance="ETechFlow\BannerSlider\Observer\AddUpdateNotification"/>
+    </event>
+    <event name="controller_action_predispatch_adminhtml_system_config_edit">
+        <observer name="etechflow_bannerslider_update_notification_sysconfig"
+                  instance="ETechFlow\BannerSlider\Observer\AddUpdateNotification"/>
     </event>
 </config>
