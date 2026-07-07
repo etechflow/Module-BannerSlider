@@ -331,6 +331,42 @@ class Slider extends Template
     }
 
     /**
+     * Reserved aspect-ratio ("W / H") derived from the first image banner's
+     * intrinsic dimensions. Lets the slider auto-size to the theme's container
+     * width at the banner's own proportions (no crop) while still reserving the
+     * height up front (no CLS). Returns '' when no image size is available, so
+     * the template can fall back to its default ratio.
+     *
+     * @return string
+     */
+    public function getReservedAspectRatio(): string
+    {
+        foreach ($this->getBanners() as $row) {
+            /** @var Banner $banner */
+            $banner = $row['banner'];
+            if ($banner->getType() !== \ETechFlow\BannerSlider\Api\Data\BannerInterface::TYPE_IMAGE) {
+                continue;
+            }
+            $file = $banner->getImage();
+            if (!$file) {
+                continue;
+            }
+            try {
+                $abs = $this->_filesystem
+                    ->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)
+                    ->getAbsolutePath(self::MEDIA_PATH . '/' . ltrim($file, '/'));
+                $size = @getimagesize($abs);
+                if ($size && (int)$size[0] > 0 && (int)$size[1] > 0) {
+                    return (int)$size[0] . ' / ' . (int)$size[1];
+                }
+            } catch (\Throwable $e) {
+                // Unreadable file — try the next banner, else fall back.
+            }
+        }
+        return '';
+    }
+
+    /**
      * JSON config consumed by the storefront slider JS component.
      */
     public function getJsConfig(): string

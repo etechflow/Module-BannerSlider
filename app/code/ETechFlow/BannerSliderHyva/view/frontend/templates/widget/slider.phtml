@@ -44,12 +44,34 @@ $config = array_merge(
     (array)json_decode($block->getJsConfig(), true),
     ['sectionUrl' => $block->getSectionUrl()]
 );
+// Auto-size to the theme's container width at the banner's own aspect-ratio
+// (no crop, no layout shift). Falls back to the CSS default when unavailable.
+$reservedAr = $block->getReservedAspectRatio();
 ?>
 <style>
+    /* Slide show/hide (fade). */
     .etf-bs__slide { opacity: 0; visibility: hidden; }
     .etf-bs__slide.is-active { opacity: 1; visibility: visible; z-index: 1; }
     .etf-bs__slide.is-pending-target { opacity: 0 !important; visibility: hidden !important; }
     .etf-bs__bullet.is-active { background: #374151; }
+    /* Scoped layout with real CSS values so the slider renders correctly even
+       when the Hyvä Tailwind build has purged arbitrary utilities like
+       aspect-[16/6], -translate-y-1/2 or bg-black/35. Hyvä + Luma safe; the
+       Tailwind classes stay in the markup and win wherever they are compiled. */
+    .etf-bs__viewport { position: relative; overflow: hidden; border-radius: .25rem; background: #f3f4f6; aspect-ratio: 16 / 6; }
+    @media (min-width: 768px) { .etf-bs__viewport { aspect-ratio: 16 / 5; } }
+    /* aspect-ratio fallback for very old browsers */
+    @supports not (aspect-ratio: 1) { .etf-bs__viewport { min-height: 260px; } }
+    .etf-bs__track { list-style: none; margin: 0; padding: 0; height: 100%; }
+    .etf-bs__slide { position: absolute; inset: 0; margin: 0; width: 100%; height: 100%; }
+    .etf-bs__link { display: block; width: 100%; height: 100%; }
+    .etf-bs__image, .etf-bs__video, .etf-bs__video-el { width: 100%; height: 100%; object-fit: cover; }
+    .etf-bs__arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; width: 2.5rem; height: 2.5rem; border: 0; border-radius: 9999px; background: rgba(0,0,0,.35); color: #fff; font-size: 1.5rem; line-height: 1; cursor: pointer; }
+    .etf-bs__arrow:hover { background: rgba(0,0,0,.6); }
+    .etf-bs__arrow--prev { left: .75rem; }
+    .etf-bs__arrow--next { right: .75rem; }
+    .etf-bs__bullets { display: flex; justify-content: center; gap: .5rem; margin-top: .625rem; }
+    .etf-bs__bullet { width: .625rem; height: .625rem; padding: 0; border: 0; border-radius: 9999px; background: #d1d5db; cursor: pointer; }
 </style>
 
 <div id="<?= $escaper->escapeHtmlAttr($htmlId) ?>"
@@ -62,7 +84,8 @@ $config = array_merge(
         <h2 class="text-xl font-semibold mb-3"><?= $escaper->escapeHtml($slider->getTitle()) ?></h2>
     <?php endif; ?>
 
-    <div class="etf-bs__viewport relative overflow-hidden rounded bg-gray-100 aspect-[16/6] md:aspect-[16/5]">
+    <div class="etf-bs__viewport relative overflow-hidden rounded bg-gray-100 aspect-[16/6] md:aspect-[16/5]"
+         <?php if ($reservedAr): ?>style="aspect-ratio: <?= $escaper->escapeHtmlAttr($reservedAr) ?>"<?php endif; ?>>
         <ul class="etf-bs__track list-none m-0 p-0 h-full">
             <?php foreach ($slides as $index => $row): ?>
                 <?php
