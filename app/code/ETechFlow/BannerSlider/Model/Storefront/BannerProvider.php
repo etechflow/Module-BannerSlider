@@ -103,7 +103,10 @@ class BannerProvider
             return false;
         }
         try {
-            $targetTs = $this->timezone->date($target)->getTimestamp();
+            // Parse the stored 'Y-m-d H:i:s' value literally in the store timezone.
+            // NOTE: $this->timezone->date($string) locale-parses its input (e.g.
+            // dd/MM/yyyy on en_GB) and mangles ISO datetimes, so parse directly.
+            $targetTs = (new \DateTime($target, new \DateTimeZone($this->timezone->getConfigTimezone())))->getTimestamp();
         } catch (\Exception $e) {
             return false;
         }

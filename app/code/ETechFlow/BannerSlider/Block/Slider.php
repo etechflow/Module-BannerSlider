@@ -175,6 +175,14 @@ class Slider extends Template
     {
         $provider = $banner->getVideoType() ?: 'mp4';
         $raw = trim((string)$banner->getVideoUrl());
+        // Auto-detect the provider from the URL so a YouTube / Vimeo link still
+        // works when the Video Provider dropdown was left on the default (MP4) —
+        // otherwise a watch-page URL is fed to a <video> element and renders black.
+        if (preg_match('#(?:youtube\.com|youtu\.be)#i', $raw)) {
+            $provider = 'youtube';
+        } elseif (preg_match('#vimeo\.com#i', $raw)) {
+            $provider = 'vimeo';
+        }
         $autoplay = $banner->getVideoAutoplay();
         $muted = $banner->getVideoMuted();
 
@@ -232,8 +240,10 @@ class Slider extends Template
             return null;
         }
         try {
-            // The stored value is interpreted in the configured store timezone.
-            $date = $this->timezone->date($target);
+            // Parse the stored 'Y-m-d H:i:s' value literally in the store timezone.
+            // NOTE: $this->timezone->date($string) locale-parses its input (e.g.
+            // dd/MM/yyyy on en_GB) and mangles ISO datetimes, so parse directly.
+            $date = new \DateTime($target, new \DateTimeZone($this->timezone->getConfigTimezone()));
         } catch (\Exception $e) {
             return null;
         }

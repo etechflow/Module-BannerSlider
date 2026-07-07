@@ -49,7 +49,10 @@ class DataProvider extends AbstractDataProvider
             // Expand csv fields into arrays for multiselect ui components.
             $data[SliderInterface::STORE_IDS] = $slider->getStoreIds();
             $data[SliderInterface::CUSTOMER_GROUP_IDS] = $slider->getCustomerGroupIds();
-            $data['banners'] = $this->bannerSliderResource->getAssignments((int)$slider->getId());
+            // The banners dynamicRows binds one level deeper (data.banners.banners
+            // — its name doubles the scope), so nest the saved rows the same way or
+            // the grid loads EMPTY on edit and a re-save silently drops every banner.
+            $data['banners'] = ['banners' => $this->bannerSliderResource->getAssignments((int)$slider->getId())];
             $this->loadedData[$slider->getId()] = $data;
         }
 
