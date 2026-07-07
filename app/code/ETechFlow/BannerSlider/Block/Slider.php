@@ -318,6 +318,19 @@ class Slider extends Template
     }
 
     /**
+     * Base URL of the customer-data section endpoint. The Hyvä Alpine component
+     * fetches it directly (rather than via RequireJS customer-data) to obtain
+     * the per-visitor targeting context, keeping the slider Full Page Cache
+     * friendly. Harmless for the Luma renderer, which does not read it.
+     *
+     * @return string
+     */
+    public function getSectionUrl(): string
+    {
+        return $this->getUrl('customer/section/load');
+    }
+
+    /**
      * JSON config consumed by the storefront slider JS component.
      */
     public function getJsConfig(): string

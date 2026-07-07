@@ -24,15 +24,6 @@ class Slider extends CoreSlider implements BlockInterface
         return parent::_toHtml();
     }
 
-    /**
-     * Base URL of the customer-data section endpoint. The Alpine component
-     * fetches it directly (rather than via RequireJS customer-data) to obtain
-     * the per-visitor targeting context, keeping the slider FPC-safe.
-     *
-     * @return string
-     */
-    public function getSectionUrl(): string
-    {
-        return $this->getUrl('customer/section/load');
-    }
+    // getSectionUrl() now lives on the shared core block (ETechFlow\BannerSlider\Block\Slider)
+    // so the core "ETechFlow Banner Slider" widget can render this Hyvä template too.
 }

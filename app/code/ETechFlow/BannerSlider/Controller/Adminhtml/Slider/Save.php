@@ -45,6 +45,12 @@ class Save extends Action
         $bannerRows = [];
         if (isset($data['banners']) && is_array($data['banners'])) {
             $bannerRows = $data['banners'];
+            // The dynamicRows component nests its records one level deeper under
+            // the same 'banners' key (submits banners[banners][...]). Unwrap to
+            // the actual row list so each row's banner_id is read correctly.
+            if (isset($bannerRows['banners']) && is_array($bannerRows['banners'])) {
+                $bannerRows = $bannerRows['banners'];
+            }
         }
         unset($data['banners']);
 

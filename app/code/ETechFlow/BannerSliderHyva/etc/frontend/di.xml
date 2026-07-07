@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!--
+      On Hyvä themes, make the core "ETechFlow Banner Slider" widget render the
+      Hyvä (Alpine) template so merchants can't accidentally pick a widget that
+      renders nothing. No effect on Luma themes.
+    -->
+    <type name="ETechFlow\BannerSlider\Block\Widget\Slider">
+        <plugin name="etechflow_bannerslider_hyva_widget_template"
+                type="ETechFlow\BannerSliderHyva\Plugin\Widget\HyvaTemplateResolver"
+                sortOrder="10"/>
+    </type>
+</config>
