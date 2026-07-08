@@ -159,21 +159,31 @@ $slideCount = count($slides);
                             <?php
                             $desktop = $block->getMediaUrl($banner->getImage());
                             $mobile = $banner->getImageMobile() ? $block->getMediaUrl($banner->getImageMobile()) : $desktop;
+                            $webpDesktop = $block->getWebpUrl($banner->getImage());
+                            $webpMobile = $banner->getImageMobile() ? $block->getWebpUrl($banner->getImageMobile()) : $webpDesktop;
                             $alt = $banner->getAltText() ?: $banner->getName();
+                            $lazy = !$isFirst && $block->isLazyLoadEnabled();
+                            $ss = $lazy ? 'data-srcset' : 'srcset';
                             ?>
                             <?php if ($desktop): ?>
                                 <picture>
+                                    <?php if ($webpMobile && $mobile !== $desktop): ?>
+                                        <source media="(max-width: 768px)" <?= $ss ?>="<?= $escaper->escapeUrl($webpMobile) ?>" type="image/webp"/>
+                                    <?php endif; ?>
                                     <?php if ($mobile !== $desktop): ?>
-                                        <source media="(max-width: 768px)" srcset="<?= $escaper->escapeUrl($mobile) ?>"/>
+                                        <source media="(max-width: 768px)" <?= $ss ?>="<?= $escaper->escapeUrl($mobile) ?>"/>
+                                    <?php endif; ?>
+                                    <?php if ($webpDesktop): ?>
+                                        <source <?= $ss ?>="<?= $escaper->escapeUrl($webpDesktop) ?>" type="image/webp"/>
                                     <?php endif; ?>
                                     <img
-                                        <?php if ($isFirst): ?>
-                                            src="<?= $escaper->escapeUrl($desktop) ?>"
-                                            loading="eager" fetchpriority="high"
-                                        <?php else: ?>
+                                        <?php if ($lazy): ?>
                                             data-src="<?= $escaper->escapeUrl($desktop) ?>"
                                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
                                             loading="lazy"
+                                        <?php else: ?>
+                                            src="<?= $escaper->escapeUrl($desktop) ?>"
+                                            loading="eager"<?php if ($isFirst): ?> fetchpriority="high"<?php endif; ?>
                                         <?php endif; ?>
                                         class="etf-bannerslider__image"
                                         alt="<?= $escaper->escapeHtmlAttr($alt) ?>"/>

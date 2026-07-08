@@ -138,6 +138,11 @@ define([
             if (!slide) {
                 return;
             }
+            // Promote lazy <source data-srcset> first so the <picture> can resolve to WebP.
+            Array.prototype.forEach.call(slide.querySelectorAll('source[data-srcset]'), function (s) {
+                s.setAttribute('srcset', s.getAttribute('data-srcset'));
+                s.removeAttribute('data-srcset');
+            });
             var img = slide.querySelector('img[data-src]');
             if (img) {
                 img.src = img.getAttribute('data-src');

@@ -23,6 +23,8 @@ class Slider extends Template
     private const CONFIG_ENABLED = 'etechflow_bannerslider/general/enabled';
     private const CONFIG_TRACKING = 'etechflow_bannerslider/performance/async_tracking';
     private const CONFIG_ATTRIBUTION = 'etechflow_bannerslider/analytics/attribution_window';
+    private const CONFIG_LAZY = 'etechflow_bannerslider/performance/lazy_load';
+    private const CONFIG_WEBP = 'etechflow_bannerslider/performance/webp';
 
     private ?SliderModel $slider = null;
     private bool $sliderLoaded = false;
@@ -69,6 +71,65 @@ class Slider extends Template
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         return $days > 0 ? $days : 7;
+    }
+
+    /**
+     * Whether off-screen slide images should be lazy-loaded
+     * (etechflow_bannerslider/performance/lazy_load).
+     */
+    public function isLazyLoadEnabled(): bool
+    {
+        return $this->_scopeConfig->isSetFlag(
+            self::CONFIG_LAZY,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * Whether to serve WebP variants when a sibling .webp file exists
+     * (etechflow_bannerslider/performance/webp).
+     */
+    public function isWebpEnabled(): bool
+    {
+        return $this->_scopeConfig->isSetFlag(
+            self::CONFIG_WEBP,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * URL of the WebP sibling of an uploaded banner image, when one exists on
+     * disk next to it (e.g. banner.png -> banner.webp) and WebP serving is
+     * enabled. Returns '' when disabled, already-webp, or no sibling is present,
+     * so the template can skip the extra <source>.
+     *
+     * @param string|null $file
+     * @return string
+     */
+    public function getWebpUrl(?string $file): string
+    {
+        if (!$file || !$this->isWebpEnabled()) {
+            return '';
+        }
+        // Already a .webp upload — the <img> itself is WebP, no extra source needed.
+        if (preg_match('/\.webp$/i', $file)) {
+            return '';
+        }
+        $webpFile = preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $file);
+        if (!$webpFile || $webpFile === $file) {
+            return '';
+        }
+        try {
+            $abs = $this->_filesystem
+                ->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)
+                ->getAbsolutePath(self::MEDIA_PATH . '/' . ltrim($webpFile, '/'));
+            if (@is_file($abs)) {
+                return $this->getMediaUrl($webpFile);
+            }
+        } catch (\Throwable $e) {
+            // no readable sibling — fall through to no-webp
+        }
+        return '';
     }
 
     public function getSliderId(): int
