@@ -1,5 +1,15 @@
 # Changelog
 
+## Diagnostics: explain why an empty slider rendered nothing
+
+A storefront slider with nothing to render no longer produces a silent blank —
+it emits a short HTML comment stating the reason, visible in the page source
+(View Source / Ctrl+U). It distinguishes: module disabled/licence invalid; the
+widget's `slider_id` not found or disabled (most often a slider that was deleted
+and recreated under a new id — the widget still points at the old one); the
+slider has no active banners for the store view; or all banners were skipped.
+No customer-visible output changes.
+
 ## 1.0.10 — Visibility: de-duplicate "All Store Views"
 
 The Store Views multiselect listed "All Store Views" twice: the source prepends
