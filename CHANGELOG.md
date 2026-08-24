@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.10 — Visibility: de-duplicate "All Store Views"
+
+The Store Views multiselect listed "All Store Views" twice: the source prepends
+its own entry AND called `System\Store::getStoreValuesForForm(false, true)`,
+whose `true` prepends another. Switched that call to `false` so only our single
+"All Store Views" (value `'0'`) is shown. Completes the 1.0.9 visibility fix.
+
 ## 1.0.9 — Marketplace QA fixes: banner/slider visibility + keyless storefront
 
 Fixes the two issues raised in Adobe Commerce Marketplace manual QA.
