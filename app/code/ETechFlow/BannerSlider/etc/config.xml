@@ -4,7 +4,14 @@
     <default>
         <etechflow_bannerslider>
             <license>
-                <production_environment>1</production_environment>
+                <!--
+                    Default to dev/non-production so the module is fully usable
+                    immediately after a plain install (e.g. the Marketplace QA
+                    environment, which has no portal license key). Merchants who
+                    license through the eTechFlow portal switch this to Yes and
+                    add their SP- key. See Model\LicenseValidator::isValid().
+                -->
+                <production_environment>0</production_environment>
                 <license_key/>
                 <issued_key/>
                 <issued_at>0</issued_at>

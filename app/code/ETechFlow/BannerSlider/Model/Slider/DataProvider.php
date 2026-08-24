@@ -46,9 +46,11 @@ class DataProvider extends AbstractDataProvider
         /** @var \ETechFlow\BannerSlider\Model\Slider $slider */
         foreach ($this->collection->getItems() as $slider) {
             $data = $slider->getData();
-            // Expand csv fields into arrays for multiselect ui components.
-            $data[SliderInterface::STORE_IDS] = $slider->getStoreIds();
-            $data[SliderInterface::CUSTOMER_GROUP_IDS] = $slider->getCustomerGroupIds();
+            // Expand csv fields into string arrays for multiselect ui components.
+            // Option values are strings, so an int value would leave the saved
+            // selection un-highlighted on reopen (reads as "not saving").
+            $data[SliderInterface::STORE_IDS] = array_map('strval', $slider->getStoreIds());
+            $data[SliderInterface::CUSTOMER_GROUP_IDS] = array_map('strval', $slider->getCustomerGroupIds());
             // The banners dynamicRows binds one level deeper (data.banners.banners
             // — its name doubles the scope), so nest the saved rows the same way or
             // the grid loads EMPTY on edit and a re-save silently drops every banner.

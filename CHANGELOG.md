@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.9 — Marketplace QA fixes: banner/slider visibility + keyless storefront
+
+Fixes the two issues raised in Adobe Commerce Marketplace manual QA.
+
+- **Visibility (Store Views / Customer Groups) not saving.** The save path was
+  correct; the multiselects failed to *reload* their selection because the model
+  getters return `int` ids while the option sources expose `string` values, so a
+  multiselect never re-highlighted the saved value (looked like it wasn't saved).
+  The `Banner` and `Slider` DataProviders now cast the ids to strings at the form
+  boundary (`array_map('strval', …)`), and the `StoreView` source emits `'0'`
+  for "All Store Views" so it matches too. Model getters stay int-typed, so the
+  storefront store/group filters are unchanged.
+- **Storefront slider rendered nothing on a keyless install.** `config.xml`
+  defaulted `production_environment` to `1`, so `LicenseValidator::isValid()`
+  demanded a portal `SP-` key and returned false on any install without one —
+  including the Marketplace QA environment — blanking the whole storefront.
+  The default is now `0`: a plain install works out of the box; merchants who
+  license through the eTechFlow portal switch it to Yes and add their SP- key.
+  (This intentionally restores the config-settable non-production mode for
+  Marketplace compatibility.)
+
 ## Security: portal-only licensing (removes forgeable key path)
 
 The `LicenseValidator` previously shipped its HMAC signing secret

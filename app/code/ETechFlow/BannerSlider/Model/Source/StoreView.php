@@ -17,7 +17,7 @@ class StoreView implements OptionSourceInterface
     {
         // Flatten the website/group/store-view tree into a simple option list,
         // prefixed with an "All Store Views" choice (value 0).
-        $options = [['value' => 0, 'label' => __('All Store Views')]];
+        $options = [['value' => '0', 'label' => __('All Store Views')]];
         foreach ($this->systemStore->getStoreValuesForForm(false, true) as $option) {
             if (!isset($option['value']) || is_array($option['value'])) {
                 continue;

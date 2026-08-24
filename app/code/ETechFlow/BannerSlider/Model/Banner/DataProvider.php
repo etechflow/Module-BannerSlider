@@ -51,8 +51,12 @@ class DataProvider extends AbstractDataProvider
         /** @var \ETechFlow\BannerSlider\Model\Banner $banner */
         foreach ($this->collection->getItems() as $banner) {
             $data = $banner->getData();
-            $data[BannerInterface::STORE_IDS] = $banner->getStoreIds();
-            $data[BannerInterface::CUSTOMER_GROUP_IDS] = $banner->getCustomerGroupIds();
+            // A multiselect UI component pre-selects an option only when the
+            // saved value matches the option value by type. The option sources
+            // expose string values, so cast the stored ids to strings here; the
+            // model getters stay int-typed for the storefront store/group filters.
+            $data[BannerInterface::STORE_IDS] = array_map('strval', $banner->getStoreIds());
+            $data[BannerInterface::CUSTOMER_GROUP_IDS] = array_map('strval', $banner->getCustomerGroupIds());
 
             // Expand the stored targeting JSON into the form's tgt_* fields.
             $data = array_merge($data, $this->targetingRules->toFormFields($banner->getConditionsSerialized()));
