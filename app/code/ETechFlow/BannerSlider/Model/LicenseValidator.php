@@ -114,7 +114,7 @@ class LicenseValidator
      */
     private function validateViaPortal(string $host, string $licenseKey): ?bool
     {
-        $cacheKey = self::CACHE_PREFIX . md5($host . ':' . $licenseKey);
+        $cacheKey = self::CACHE_PREFIX . hash('sha256', $host . ':' . $licenseKey);
         $cached   = $this->cache->load($cacheKey);
         if ($cached === '1') {
             return true;
@@ -191,7 +191,7 @@ class LicenseValidator
      */
     private function graceCacheKey(string $host, string $licenseKey): string
     {
-        return self::GRACE_PREFIX . md5($this->canonicalize($host) . ':' . $licenseKey);
+        return self::GRACE_PREFIX . hash('sha256', $this->canonicalize($host) . ':' . $licenseKey);
     }
 
     private function writeGrace(string $host, string $licenseKey): void

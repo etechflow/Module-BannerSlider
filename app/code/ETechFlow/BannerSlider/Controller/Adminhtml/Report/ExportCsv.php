@@ -9,6 +9,7 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Response\Http\FileFactory;
 use Magento\Framework\Filesystem;
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 
 class ExportCsv extends Action
 {
@@ -18,7 +19,8 @@ class ExportCsv extends Action
         Context $context,
         private readonly FileFactory $fileFactory,
         private readonly StatsProvider $statsProvider,
-        private readonly Filesystem $filesystem
+        private readonly Filesystem $filesystem,
+        private readonly TimezoneInterface $timezone
     ) {
         parent::__construct($context);
     }
@@ -30,8 +32,9 @@ class ExportCsv extends Action
     public function execute()
     {
         $from = $this->validDate((string)$this->getRequest()->getParam('from'))
-            ?? date('Y-m-d', strtotime('-29 days'));
-        $to = $this->validDate((string)$this->getRequest()->getParam('to')) ?? date('Y-m-d');
+            ?? $this->timezone->date()->modify('-29 days')->format('Y-m-d');
+        $to = $this->validDate((string)$this->getRequest()->getParam('to'))
+            ?? $this->timezone->date()->format('Y-m-d');
 
         $rows = $this->statsProvider->getPerBanner($from, $to);
         $name = 'export/bannerslider_stats_' . $from . '_' . $to . '.csv';

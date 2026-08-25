@@ -123,7 +123,7 @@ class Slider extends Template
             $abs = $this->_filesystem
                 ->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)
                 ->getAbsolutePath(self::MEDIA_PATH . '/' . ltrim($webpFile, '/'));
-            if (@is_file($abs)) {
+            if (is_file($abs)) {
                 return $this->getMediaUrl($webpFile);
             }
         } catch (\Throwable $e) {
@@ -426,7 +426,7 @@ class Slider extends Template
                 $abs = $this->_filesystem
                     ->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)
                     ->getAbsolutePath(self::MEDIA_PATH . '/' . ltrim($file, '/'));
-                $size = @getimagesize($abs);
+                $size = is_file($abs) ? getimagesize($abs) : false;
                 if ($size && (int)$size[0] > 0 && (int)$size[1] > 0) {
                     return (int)$size[0] . ' / ' . (int)$size[1];
                 }

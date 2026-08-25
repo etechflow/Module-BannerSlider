@@ -227,7 +227,7 @@ class LicenseValidatorTest extends TestCase
         ]);
 
         // A genuine portal success was cached recently (only writeGrace can do this).
-        $graceKey = 'etf_bs_lic_grace_' . md5($host . ':' . $key);
+        $graceKey = 'etf_bs_lic_grace_' . hash('sha256', $host . ':' . $key);
         $this->cache->method('load')->willReturnCallback(
             static fn ($k) => $k === $graceKey ? (string) time() : false
         );
@@ -239,7 +239,7 @@ class LicenseValidatorTest extends TestCase
     {
         // Grace was seeded for shop.example.com; the pirate is on another host,
         // so their grace-key lookup misses and they get nothing.
-        $goodGraceKey = 'etf_bs_lic_grace_' . md5('shop.example.com:SP-live-abc123');
+        $goodGraceKey = 'etf_bs_lic_grace_' . hash('sha256', 'shop.example.com:SP-live-abc123');
         $this->cache->method('load')->willReturnCallback(
             static fn ($k) => $k === $goodGraceKey ? (string) time() : false
         );
@@ -264,7 +264,7 @@ class LicenseValidatorTest extends TestCase
         ]);
 
         // Even with a cached prior success, an explicit portal reject wins.
-        $graceKey = 'etf_bs_lic_grace_' . md5($host . ':' . $key);
+        $graceKey = 'etf_bs_lic_grace_' . hash('sha256', $host . ':' . $key);
         $this->cache->method('load')->willReturnCallback(
             static fn ($k) => $k === $graceKey ? (string) time() : false
         );

@@ -190,13 +190,13 @@ $slideCount = count($slides);
                             <?php if ($desktop): ?>
                                 <picture>
                                     <?php if ($webpMobile && $mobile !== $desktop): ?>
-                                        <source media="(max-width: 768px)" <?= $ss ?>="<?= $escaper->escapeUrl($webpMobile) ?>" type="image/webp"/>
+                                        <source media="(max-width: 768px)" <?= /* @noEscape */ $ss ?>="<?= $escaper->escapeUrl($webpMobile) ?>" type="image/webp"/>
                                     <?php endif; ?>
                                     <?php if ($mobile !== $desktop): ?>
-                                        <source media="(max-width: 768px)" <?= $ss ?>="<?= $escaper->escapeUrl($mobile) ?>"/>
+                                        <source media="(max-width: 768px)" <?= /* @noEscape */ $ss ?>="<?= $escaper->escapeUrl($mobile) ?>"/>
                                     <?php endif; ?>
                                     <?php if ($webpDesktop): ?>
-                                        <source <?= $ss ?>="<?= $escaper->escapeUrl($webpDesktop) ?>" type="image/webp"/>
+                                        <source <?= /* @noEscape */ $ss ?>="<?= $escaper->escapeUrl($webpDesktop) ?>" type="image/webp"/>
                                     <?php endif; ?>
                                     <img
                                         <?php if ($lazy): ?>
