@@ -13,11 +13,31 @@
 
 use ETechFlow\BannerSlider\Api\Data\BannerInterface;
 
-if (!$block->isModuleEnabled() || !$block->hasBanners()) {
+// Instead of a silent blank when there is nothing to render, emit a short HTML
+// comment explaining WHY, so a merchant can see the reason in the page source
+// (View Source / Ctrl+U). The most common cause is a widget that still points at
+// a slider that was deleted and recreated under a new id.
+if (!$block->isModuleEnabled()) {
+    echo '<!-- ETechFlow Banner Slider (Hyva): the module is disabled or the licence is not valid'
+        . ' (Stores > Configuration > ETECHFLOW > Banner Slider). -->';
     return;
 }
 
 $slider = $block->getSlider();
+if (!$slider) {
+    echo '<!-- ETechFlow Banner Slider (Hyva): slider id ' . (int)$block->getSliderId()
+        . ' was not found or is disabled. If the slider was deleted and recreated it now has a'
+        . ' different id — edit this widget and re-select the current slider. -->';
+    return;
+}
+
+if (!$block->hasBanners()) {
+    echo '<!-- ETechFlow Banner Slider (Hyva): slider "' . $escaper->escapeHtml((string)$slider->getTitle())
+        . '" (id ' . (int)$slider->getId() . ') has no active banners for this store view. Assign at'
+        . ' least one banner and make sure it is enabled, within its schedule, and visible to this store. -->';
+    return;
+}
+
 $htmlId = $block->getSliderHtmlId();
 $showTitle = (bool)$block->getData('show_title');
 
@@ -36,6 +56,8 @@ foreach ($block->getBanners() as $row) {
     $slides[] = $row;
 }
 if (!$slides) {
+    echo '<!-- ETechFlow Banner Slider (Hyva): every banner in this slider was skipped (for example a'
+        . ' product banner whose product is unavailable in this store). -->';
     return;
 }
 $slideCount = count($slides);
