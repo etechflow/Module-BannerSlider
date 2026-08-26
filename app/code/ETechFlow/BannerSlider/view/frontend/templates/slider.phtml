@@ -313,6 +313,24 @@ $slideCount = count($slides);
     if (ap) { ap.addEventListener('click', function () { prv(); start(); }); }
     bullets.forEach(function (b) { b.addEventListener('click', function () { show(parseInt(b.getAttribute('data-index'), 10) || 0); start(); }); });
     if (cfg.pauseOnHover) { root.addEventListener('mouseenter', stop); root.addEventListener('mouseleave', start); }
+    // Targeting: the requireJS path defers slides whose rules need customer-data
+    // (group/login/cart/country), reveals them on a fail-open timeout, then prunes
+    // the ones that do not match once the section arrives. None of that machinery
+    // runs here, because targeting.js is requireJS-only.
+    //
+    // Without this, any slide carrying targeting rules keeps `is-pending-target`
+    // forever, and that class is defined AFTER `.is-active` at equal specificity —
+    // so it wins, and the slider renders a permanently blank viewport. That is
+    // strictly worse than showing the banner: a merchant sees an empty hero and no
+    // error. Fail open, exactly as the requireJS path already does on timeout.
+    //
+    // Precise per-visitor targeting on Hyva is the job of the ETechFlow_BannerSliderHyva
+    // companion module, which fetches the customer-data section directly.
+    function efRevealPendingTarget() {
+        slides.forEach(function (s) { s.classList.remove('is-pending-target'); });
+    }
+    efRevealPendingTarget();
+
     show(0); start();
 })();
 </script>
