@@ -245,3 +245,74 @@ $slideCount = count($slides);
     }
 }
 </script>
+
+<?php /* Hyvä support: the storefront styles ship as LESS (Luma pipeline only), so Hyvä —
+        which does not compile Magento LESS — gets NO slider CSS and the slides render
+        unstyled/stacked. Emit the compiled equivalent inline so the slider is styled on
+        BOTH themes (identical rules → harmless on Luma). */ ?>
+<style id="ef-bs-hyva-css">
+.etf-bannerslider{position:relative;margin:0 0 20px}
+.etf-bannerslider__title{margin:0 0 12px}
+.etf-bannerslider__viewport{position:relative;overflow:hidden;aspect-ratio:16/5;background:#f4f4f4}
+.etf-bannerslider__track{list-style:none;margin:0;padding:0;height:100%}
+.etf-bannerslider__slide{position:absolute;inset:0;margin:0;opacity:0;visibility:hidden;transition:opacity .5s ease}
+.etf-bannerslider__slide.is-active{opacity:1;visibility:visible;z-index:1}
+.etf-bannerslider__slide.is-pending-target{opacity:0;visibility:hidden}
+.etf-bannerslider.effect-slide .etf-bannerslider__slide{transform:translateX(30px);transition:opacity .5s ease,transform .5s ease}
+.etf-bannerslider.effect-slide .etf-bannerslider__slide.is-active{transform:translateX(0)}
+.etf-bannerslider__link,.etf-bannerslider picture{display:block;width:100%;height:100%}
+.etf-bannerslider__image{width:100%;height:100%;object-fit:cover;display:block}
+.etf-bannerslider__html{width:100%;height:100%}
+.etf-bannerslider__arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;border:0;cursor:pointer;width:40px;height:40px;font-size:26px;line-height:1;color:#fff;background:rgba(0,0,0,.35);border-radius:50%;transition:background .2s ease}
+.etf-bannerslider__arrow:hover{background:rgba(0,0,0,.6)}
+.etf-bannerslider__arrow--prev{left:12px}
+.etf-bannerslider__arrow--next{right:12px}
+.etf-bannerslider__bullets{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.etf-bannerslider__bullet{width:10px;height:10px;padding:0;border:0;border-radius:50%;cursor:pointer;background:#ccc;transition:background .2s ease}
+.etf-bannerslider__bullet.is-active{background:#333}
+@media (max-width:768px){.etf-bannerslider__viewport{aspect-ratio:4/3}.etf-bannerslider__arrow{width:32px;height:32px;font-size:20px}}
+</style>
+<?php /* Hyvä support: Hyvä strips requireJS + text/x-magento-init, so the requireJS
+        slider above never initialises. This guarded vanilla controller runs ONLY when
+        requireJS is absent (i.e. Hyvä); on Luma window.require exists and the
+        x-magento-init path handles it. Reuses the same markup + CSS (crossfade via
+        .is-active) and honours the admin settings. */ ?>
+<script>
+(function () {
+    if (window.require) { return; } // Luma path handles it via requireJS
+    var root = document.getElementById('<?= $escaper->escapeJs($htmlId) ?>');
+    if (!root || root.dataset.efHyvaInit) { return; }
+    root.dataset.efHyvaInit = '1';
+    var cfg = <?= /* @noEscape */ $block->getJsConfig() ?>;
+    var slides  = Array.prototype.slice.call(root.querySelectorAll('.etf-bannerslider__slide'));
+    var bullets = Array.prototype.slice.call(root.querySelectorAll('.etf-bannerslider__bullet'));
+    if (slides.length < 1) { return; }
+    var cur = 0, timer = null;
+    function loadSlide(el) {
+        el.querySelectorAll('source[data-srcset]').forEach(function (so) { so.srcset = so.getAttribute('data-srcset'); so.removeAttribute('data-srcset'); });
+        el.querySelectorAll('img').forEach(function (im) {
+            if (im.getAttribute('data-src')) { im.src = im.getAttribute('data-src'); im.removeAttribute('data-src'); }
+            if (im.loading === 'lazy') { im.loading = 'eager'; if (!im.complete || !im.naturalWidth) { var u = im.getAttribute('src'); if (u) { im.src = ''; im.src = u; } } }
+        });
+    }
+    function show(i) {
+        var n = slides.length; i = (i % n + n) % n;
+        loadSlide(slides[i]); loadSlide(slides[(i + 1) % n]);
+        slides.forEach(function (s, k) { s.classList.toggle('is-active', k === i); });
+        bullets.forEach(function (b, k) { b.classList.toggle('is-active', k === i); });
+        cur = i;
+    }
+    function nxt() { (!cfg.loop && cur === slides.length - 1) ? show(0) : show(cur + 1); }
+    function prv() { show(cur - 1); }
+    function speed() { var s = parseInt(cfg.autoplaySpeed, 10) || 5000; if (s < 100) { s *= 1000; } return Math.max(1500, s); }
+    function start() { if (!cfg.autoplay || slides.length < 2) { return; } stop(); timer = setInterval(nxt, speed()); }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    var an = root.querySelector('.etf-bannerslider__arrow--next');
+    var ap = root.querySelector('.etf-bannerslider__arrow--prev');
+    if (an) { an.addEventListener('click', function () { nxt(); start(); }); }
+    if (ap) { ap.addEventListener('click', function () { prv(); start(); }); }
+    bullets.forEach(function (b) { b.addEventListener('click', function () { show(parseInt(b.getAttribute('data-index'), 10) || 0); start(); }); });
+    if (cfg.pauseOnHover) { root.addEventListener('mouseenter', stop); root.addEventListener('mouseleave', start); }
+    show(0); start();
+})();
+</script>
